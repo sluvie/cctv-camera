@@ -1,0 +1,146 @@
+INFO:root:Started
+INFO:root:Started
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765639 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765641 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765641 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765642 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765642 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765642 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765643 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765643 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765643 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765644 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765644 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765644 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765645 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765645 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765645 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765646 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765646 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765646 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765652 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765652 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765652 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765653 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765653 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765653 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765654 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765654 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765661 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'rpan': None, 'rtilt': 1, 'rzoom': None, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?rtilt=1&camera=1&html=no&timestamp=1619765661 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'rpan': None, 'rtilt': -1, 'rzoom': None, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?rtilt=-1&camera=1&html=no&timestamp=1619765662 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'rpan': -1, 'rtilt': None, 'rzoom': None, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?rpan=-1&camera=1&html=no&timestamp=1619765663 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'rpan': 1, 'rtilt': None, 'rzoom': None, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?rpan=1&camera=1&html=no&timestamp=1619765663 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'rpan': 1, 'rtilt': None, 'rzoom': None, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?rpan=1&camera=1&html=no&timestamp=1619765663 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'rpan': -1, 'rtilt': None, 'rzoom': None, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?rpan=-1&camera=1&html=no&timestamp=1619765664 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'rpan': 1, 'rtilt': None, 'rzoom': None, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?rpan=1&camera=1&html=no&timestamp=1619765664 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'rpan': None, 'rtilt': 1, 'rzoom': None, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?rtilt=1&camera=1&html=no&timestamp=1619765664 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented
+INFO:root:camera_command({'pan': 0.02, 'tilt': 0.6, 'zoom': 0.0, 'speed': None})
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.13.100:8080
+DEBUG:urllib3.connectionpool:http://192.168.13.100:8080 "GET /axis-cgi/com/ptz.cgi?pan=0.02&tilt=0.6&zoom=0.0&camera=1&html=no&timestamp=1619765664 HTTP/1.1" 400 1397
+ERROR:root:s:Receiverter:ActionNotSupportedAction Not Implemented

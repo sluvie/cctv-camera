@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	{% include 'part/style.html' %}
+</head>
+
+<body>
+	<div id="main">
+		<div id="root" class="mode-light mode-exploring">
+			{% include 'part/aside.html' %}
+
+			<div class="container">
+				<div id="camera-render"></div>
+			</div>
+		<div>
+			
+	</div>
+
+	{% include 'part/footer.html' %}
+	{% include 'part/script.html' %}
+
+	<script>
+		$(document).ready(function () {
+			$("#camera-render").load('{{basename}}/camera');
+		});
+	</script>
+</body>
+
+</html>

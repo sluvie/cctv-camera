@@ -1,0 +1,84 @@
+My camera`s hostname: IPCAM
+(Capabilities){
+   Analytics = 
+      (AnalyticsCapabilities){
+         XAddr = "http://192.168.13.100:8080/onvif/Analytics"
+         RuleSupport = True
+         AnalyticsModuleSupport = True
+      }
+   Device = 
+      (DeviceCapabilities){
+         XAddr = "http://192.168.13.100:8080/onvif/device_service"
+         Network = 
+            (NetworkCapabilities){
+               IPFilter = False
+               ZeroConfiguration = False
+               IPVersion6 = False
+               DynDNS = False
+            }
+         System = 
+            (SystemCapabilities){
+               DiscoveryResolve = False
+               DiscoveryBye = True
+               RemoteDiscovery = False
+               SystemBackup = False
+               SystemLogging = False
+               FirmwareUpgrade = False
+               SupportedVersions[] = 
+                  (OnvifVersion){
+                     Major = 2
+                     Minor = 4
+                  },
+            }
+         IO = 
+            (IOCapabilities){
+               InputConnectors = 0
+               RelayOutputs = 0
+            }
+         Security = 
+            (SecurityCapabilities){
+               TLS1.1 = False
+               TLS1.2 = False
+               OnboardKeyGeneration = False
+               AccessPolicyConfig = False
+               X.509Token = False
+               SAMLToken = False
+               KerberosToken = False
+               RELToken = False
+            }
+      }
+   Events = 
+      (EventCapabilities){
+         XAddr = "http://192.168.13.100:8080/onvif/event_service"
+         WSSubscriptionPolicySupport = False
+         WSPullPointSupport = False
+         WSPausableSubscriptionManagerInterfaceSupport = False
+      }
+   Imaging = 
+      (ImagingCapabilities){
+         XAddr = "http://192.168.13.100:8080/onvif/image_service"
+      }
+   Media = 
+      (MediaCapabilities){
+         XAddr = "http://192.168.13.100:8080/onvif/media_service"
+         StreamingCapabilities = 
+            (RealTimeStreamingCapabilities){
+               RTPMulticast = False
+               RTP_TCP = False
+               RTP_RTSP_TCP = False
+            }
+         Extension[] = 
+            (Extension){
+               ProfileCapabilities[] = 
+                  (ProfileCapabilities){
+                     MaximumNumberOfProfiles[] = 
+                        "4",
+                  },
+            },
+      }
+   PTZ = 
+      (PTZCapabilities){
+         XAddr = "http://192.168.13.100:8080/onvif/ptz_service"
+      }
+   Extension = ""
+ }
