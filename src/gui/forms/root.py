@@ -4,9 +4,7 @@ from tkinter import messagebox
 
 import threading
 
-from forms.camera import CameraWindow
-
-import ptz.camera as cam
+from forms.thumbnail import ThumbnailWindow
 
 class RootWindow:
 
@@ -18,7 +16,7 @@ class RootWindow:
         self.win.eval('tk::PlaceWindow . center')
 
         # component
-        fields = 'Ip address', 'Username', 'Password'
+        fields = 'Username', 'Password'
         ents = self.makeform(self.win, fields)
         self.win.bind('<Return>', (lambda event, e=ents: fetch(e)))
         
@@ -48,19 +46,11 @@ class RootWindow:
 
 
     def signin_callback(self, entries):
-        ipaddress = entries['Ip address'].get()
         username = entries['Username'].get()
         password = entries['Password'].get()
 
-        ''' new window
-        win2 = tk.Toplevel(self.win)
-        cameraWindow = CameraWindow(win2, "Camera {}".format(ipaddress))
-        '''
-
-        t = threading.Thread(target=cam.capture, args=(ipaddress, username, password))
-        t.daemon = True
-        t.start()
-        t.join()
-
-        self.win.destroy()
-
+        if username == "admin" and password == "215802":
+            # show the thumbnail web camera
+            thumbnail_window = tk.Toplevel(self.win)
+            cameraWindow = ThumbnailWindow(thumbnail_window, "All Camera")
+            self.win.withdraw()
