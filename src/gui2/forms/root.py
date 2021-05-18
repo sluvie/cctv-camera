@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter.ttk import *
-from tkinter import messagebox
+from tkinter import Menu, messagebox
 from PIL import Image, ImageTk
 
 # system
@@ -12,6 +12,7 @@ from collections import deque
 # form
 from forms.base import BaseWindow
 from forms.login import LoginWindow
+from forms.settingcamera import SettingCameraWindow
 from forms.control_ptz import ControlPTZWindow
 
 # models
@@ -36,7 +37,8 @@ class RootWindow(BaseWindow):
         super().__init__(title, maximize)
 
         # can't resize
-        self.win.resizable(False, False)
+        # self.win.resizable(False, False)
+        self.win.attributes('-fullscreen', True)
 
         self.camera_list = Camera_m()
 
@@ -65,6 +67,19 @@ class RootWindow(BaseWindow):
 
 
     def initialize_component(self):
+
+        # menu bar
+        # main menu
+        menubar = Menu(self.win)
+        appmenu = Menu(menubar, tearoff=0)
+        preferencesmenu = Menu(self.win, tearoff=0)
+        preferencesmenu.add_command(label="Settings Camera", command=self.show_setting_camera_window)
+        appmenu.add_cascade(label="Preferences", menu=preferencesmenu)
+        appmenu.add_separator()
+        appmenu.add_command(label="Close", command=self.win.quit)
+        menubar.add_cascade(label="App Camera", menu=appmenu)
+        self.win.config(menu=menubar)
+        
 
         # get data camera
         camera_list = self.camera_list.list()
@@ -115,12 +130,24 @@ class RootWindow(BaseWindow):
         # 
         f_camera.pack(side=tk.TOP, fill=tk.BOTH, padx=5, pady=2)
 
+
+
+
+        # TODO
+        # must can maintan multiple camera
         # initialization camera
-        self.camera_ptz = Camera_PTZ("192.168.13.100", self.username, self.password)
+        # self.camera_ptz = Camera_PTZ("192.168.13.100", self.username, self.password)
         
         # setup the update callback
-        self.win.after(0, func=lambda: self.update_all(image_camera, button_onoff_camera))
+        # self.win.after(0, func=lambda: self.update_all(image_camera, button_onoff_camera))
     
+
+    # setting camera window
+    def show_setting_camera_window(self):
+        win_setting = SettingCameraWindow(self.win, "Setting Camera")
+        self.win.wait_window(win_setting.top)
+
+
     # 
     def open_url(self, event):
         camera_label = event.widget

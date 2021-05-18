@@ -4,7 +4,6 @@ from tkinter.ttk import *
 from tkinter import messagebox
 
 # form
-from forms.base import BaseWindow
 from forms.base import BaseDialog
 
 # models
@@ -19,7 +18,7 @@ class LoginWindow(BaseDialog):
     e_password = None
 
     def __init__(self, parent, title):
-        super().__init__(parent, title, window_width=400, window_height=100)
+        super().__init__(parent, title, window_width=350, window_height=125)
 
         # add component
         self.add_component()
@@ -51,11 +50,12 @@ class LoginWindow(BaseDialog):
         # button ok
         b_ok = tk.Button(self.top, width=10, text='Ok', command=lambda: self.ok_callback())
         b_ok.pack(side=tk.RIGHT, padx=5, pady=5)
-
+        
         # window event
         self.top.protocol("WM_DELETE_WINDOW", self.cancel_callback)
 
 
+    # login event
     def ok_callback(self):
         # get data entry
         self.username = self.e_username.get()
@@ -68,13 +68,14 @@ class LoginWindow(BaseDialog):
             self.top.destroy()
         else:
             # failed to login
-            messagebox.showerror(title=None, message="Account tidak terdaftar.")
+            messagebox.showerror(title=None, message="Account not registered.")
             # reset
             self.accountid = -1
             self.username = ""
             self.password = ""
 
 
+    # cancel event
     def cancel_callback(self):
         self.accountid = -2
         self.top.destroy()
