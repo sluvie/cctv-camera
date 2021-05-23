@@ -1,7 +1,7 @@
 import cv2
+cv2.ocl.setUseOpenCL(False)
+
 import numpy as np
-import sys
-import threading
 import time
 import requests
 from requests.auth import HTTPBasicAuth
@@ -113,7 +113,7 @@ def capture(p_ipaddress, p_user, p_password):
         pass
 
 
-
+# MAIN CLASS FOR CAMERA HANDLE
 class Camera_PTZ:
 
     ipaddress = None
@@ -121,46 +121,47 @@ class Camera_PTZ:
     password = None
     cam = None
 
+    # window
+    exit_window_frame = False
+
     def __init__(self, p_ipaddress, p_username, p_password):
         self.ipaddress = p_ipaddress
         self.username = p_username
         self.password = p_password
+        self.exit_window_frame = False
 
+    def connect(self):
         # init the camera
-        cam_url = "rtsp://{}/1".format(p_ipaddress)
+        cam_url = "rtsp://{}/1".format(self.ipaddress)
         try:
             self.cam = cv2.VideoCapture(cam_url)
-        except:
-            pass
+        except cv2.error as e:
+            print(e)
+
+    def disconnect(self):
+        self.cam = None
 
     def capture_image(self, is_thumbnail, width, height):
-        success, frame = self.cam.read()
-        if not success:
-            return None
-        
-        if (is_thumbnail):
-            frame = cv2.resize(frame, (width, height)) 
-
-        gray_im = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        a = Image.fromarray(frame)
-        return (a)
-
-    def render(self, p_ipaddress, p_user, p_password):
-        global exit_program
-        global username
-        global password
-
-        # connect to camera
-        camera_url = "rtsp://{}/1".format(p_ipaddress)
-        username = p_user
-        password = p_password
-
         try:
-            #cap = cv2.VideoCapture(camera_url)
-            exit_program = 0
+            success, frame = self.cam.read()
+            if not success:
+                return None
+            
+            if (is_thumbnail):
+                frame = cv2.resize(frame, (width, height)) 
+
+            gray_im = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            a = Image.fromarray(frame)
+            return (a)
+        except:
+            return None
+
+    def render(self):
+        try:
+            self.exit_window_frame = False
 
             while True:
-                if exit_program == 1:
+                if self.exit_window_frame == True:
                     break
 
                 # capture the frames
@@ -171,10 +172,10 @@ class Camera_PTZ:
                     break
 
                 frame = cv2.resize(frame, (screen_width, screen_height)) 
-                cv2.imshow('frame', frame)
+                cv2.imshow(self.ipaddress, frame)
 
                 # grab event keyboard
-                event_keyboard(cv2.waitKey(1) & 0xff)
+                self.event_keyboard(cv2.waitKey(1) & 0xff)
 
             # destroy all camera
             #cap.release()
@@ -182,6 +183,33 @@ class Camera_PTZ:
         except:
             cv2.destroyAllWindows()
             
+
+    def event_keyboard(self, key):
+        if key == 27:
+            self.exit_window_frame = True
+
+        elif key == ord('w') or key == ord('W'):
+            self.up()
+            
+        elif key == ord('a') or key == ord('A'):
+            self.left()
+
+        elif key == ord('s') or key == ord('S'):
+            self.down()
+
+        elif key == ord('d') or key == ord('D'):
+            self.right()
+
+        elif key == ord('z') or key == ord('Z'):
+            self.zoomin()
+        
+        elif key == ord('x') or key == ord('X'):
+            self.zoomout()
+
+        elif key == ord('h') or key == ord('H'):
+            stop_event()
+
+
     def left(self):
         global URL
         PARAMS = {'-step': "0", "-act": "left", "-speed": "2"}

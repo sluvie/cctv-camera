@@ -1,5 +1,7 @@
 # database
 from tinydb import TinyDB, Query
+from tinydb.queries import where
+from tinydb.operations import delete
 
 class Camera_m:
 
@@ -45,13 +47,30 @@ class Camera_m:
     def list(self):
         return (self.db.all())
 
+    def getmaxid(self):
+        id = 0
+        rows = self.db.all()
+        for row in rows:
+            if row["id"] > id:
+                id = row["id"]
+        return id
+
     def get(self, id):
         q_camera = Query()
-        row = self.db.search(q_camera.id == id)
+        row = self.db.get(q_camera.id == id)
         if row:
             return row
         else:
             return None
+
+    def insert(self, row):
+        self.db.insert(row)
+        q_camera = Query()
+        row = self.get(row["id"])
+        if row:
+            return True
+        else:
+            return False
 
     def update(self, row):
         if row:
@@ -60,3 +79,12 @@ class Camera_m:
             return True
         else:
             return False
+
+    def delete(self, doc_id, id):
+        self.db.remove(doc_ids=[doc_id])
+
+        row = self.get(id)
+        if row:
+            return False
+        else:
+            return True

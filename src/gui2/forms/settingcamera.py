@@ -25,7 +25,11 @@ class SettingCameraWindow(BaseDialog):
     e_ipaddresstext = None
     e_usernametext = None
     e_passwordtext = None
+    b_add = None
+    b_edit = None
+    b_delete = None
     b_save = None
+    b_cancel = None
 
     
     def __init__(self, parent, title):
@@ -100,15 +104,23 @@ class SettingCameraWindow(BaseDialog):
         l_password.grid(row=3, column=0)
         self.e_password.grid(row=3, column=1)
 
-        # button save
         f_button = Frame(f_dataentry)
+        # button add
+        self.b_add = tk.Button(f_button, width=10, text='Add', command=lambda: self.add_data())
+        self.b_add.grid(row=0, column=0)
+        # button edit
+        self.b_edit = tk.Button(f_button, width=10, text='Edit', command=lambda: self.edit_data())
+        self.b_edit.grid(row=0, column=1)
+        # button delete
+        self.b_delete = tk.Button(f_button, width=10, text='Delete', command=lambda: self.delete_data())
+        self.b_delete.grid(row=0, column=2)
+        # button save
         self.b_save = tk.Button(f_button, width=10, text='Save', command=lambda: self.save_data())
-        self.b_save.grid(row=0, column=0)
-        self.b_save["state"] = DISABLED
+        self.b_save.grid(row=0, column=3)
         # button close
-        b_close = tk.Button(f_button, width=10, text='Close', command=lambda: self.top.destroy())
-        b_close.grid(row=0, column=1)
-        f_button.grid(row=4, column=1)
+        self.b_cancel = tk.Button(f_button, width=10, text='Cancel', command=lambda: self.cancel_addedit())
+        self.b_cancel.grid(row=0, column=4)
+        f_button.grid(row=4, column=0, columnspan=5)
 
         # event
         self.tree_camera.bind("<<TreeviewSelect>>", self.doubleclick_callback)
@@ -117,7 +129,7 @@ class SettingCameraWindow(BaseDialog):
         f_dataentry.pack(side=tk.TOP, padx=5, pady=5)
 
         # reset
-        self.reset_data_entry()
+        self.reset_data_entry(1)
 
     
     # refresh data tree camera
@@ -154,42 +166,114 @@ class SettingCameraWindow(BaseDialog):
             self.e_ipaddresstext.set(row[1])
             self.e_usernametext.set(row[2])
             self.e_passwordtext.set(row[3])
-
-            self.b_save["state"] = NORMAL
         except:
-            self.reset_data_entry()
+            self.reset_data_entry(1)
 
 
     # reset data entry
-    def reset_data_entry(self):
-        self.e_idtext.set("-1")
-        self.e_ipaddresstext.set("")
-        self.e_usernametext.set("")
-        self.e_passwordtext.set("")
-        self.b_save["state"] = DISABLED
+    def reset_data_entry(self, status):
+        # status 1 : normal
+        # status 2 : add
+        # status 3 : edit
+        if status == 1:
+            self.e_idtext.set("-1")
+            self.e_ipaddresstext.set("")
+            self.e_usernametext.set("")
+            self.e_passwordtext.set("")
+            self.e_ipaddress.configure(state=DISABLED)
+            self.e_username.configure(state=DISABLED)
+            self.e_password.configure(state=DISABLED)
+            self.b_add["state"] = NORMAL
+            self.b_edit["state"] = NORMAL
+            self.b_delete["state"] = DISABLED
+            self.b_save["state"] = DISABLED
+            self.b_cancel["state"] = DISABLED
+        elif status == 2:
+            self.e_idtext.set("-1")
+            self.e_ipaddresstext.set("")
+            self.e_usernametext.set("")
+            self.e_passwordtext.set("")
+            self.e_ipaddress.configure(state=NORMAL)
+            self.e_username.configure(state=NORMAL)
+            self.e_password.configure(state=NORMAL)
+            self.b_add["state"] = DISABLED
+            self.b_edit["state"] = DISABLED
+            self.b_delete["state"] = DISABLED
+            self.b_save["state"] = NORMAL
+            self.b_cancel["state"] = NORMAL
+        elif status == 3:
+            self.e_ipaddress.configure(state=NORMAL)
+            self.e_username.configure(state=NORMAL)
+            self.e_password.configure(state=NORMAL)
+            self.b_add["state"] = DISABLED
+            self.b_edit["state"] = DISABLED
+            self.b_delete["state"] = NORMAL
+            self.b_save["state"] = NORMAL
+            self.b_cancel["state"] = NORMAL
+
+    # add data
+    # edit data
+    def add_data(self):
+        self.reset_data_entry(2)
+
+    # edit data
+    def edit_data(self):
+        id = self.e_idtext.get()
+        if id == "-1":
+            messagebox.showerror(title=None, message="Error, can't edit data.")
+        else:
+            self.reset_data_entry(3)
+
+    # edit data
+    def delete_data(self):
+        msgbox = tk.messagebox.askquestion ('Confirmation Delete','Are you sure you want to delete the data',icon = 'warning')
+        if msgbox == 'yes':
+            id = self.e_idtext.get()
+            row = self.camera_list.get(int(id))
+            if self.camera_list.delete(row.doc_id, id):
+                # refresh tree
+                self.refresh_tree_camera()
+                self.reset_data_entry(1)
+                messagebox.showinfo(title=None, message="Deleting data successfully.")
+            else:
+                messagebox.showerror(title=None, message="Error, data can't be deleted.")
 
     # save the data (add / edit)
     def save_data(self):
         id = self.e_idtext.get()
-        print(id)
         if id == "-1":
             # add
-            pass
+            newid = self.camera_list.getmaxid()
+            row = {
+                'id': newid + 1, 
+                'ip': self.e_ipaddresstext.get(), 
+                'username': self.e_usernametext.get(), 
+                'password': self.e_passwordtext.get(), 
+                'status': -1
+            }
+            if self.camera_list.insert(row):
+                self.refresh_tree_camera()
+                self.reset_data_entry(1)
+                messagebox.showinfo(title=None, message="Saving data successfully.")
+            else:
+                messagebox.showerror(title=None, message="Error, data can't be inserted.")
         else:
             # edit
             row = self.camera_list.get(int(id))
-            print(row)
             if row:
-                row[0]["ip"] = self.e_ipaddresstext.get()
-                row[0]["username"] = self.e_usernametext.get()
-                row[0]["password"] = self.e_passwordtext.get()
-                if self.camera_list.update(row[0]):
+                row["ip"] = self.e_ipaddresstext.get()
+                row["username"] = self.e_usernametext.get()
+                row["password"] = self.e_passwordtext.get()
+                if self.camera_list.update(row):
                     # refresh tree
                     self.refresh_tree_camera()
-                    self.reset_data_entry()
+                    self.reset_data_entry(1)
                     messagebox.showinfo(title=None, message="Saving data successfully.")
                 else:
-                    messagebox.showerror(title=None, message="Error, data can't be inserted or updated.")
+                    messagebox.showerror(title=None, message="Error, data can't be updated.")
             else:
                 messagebox.showerror(title=None, message="Data not found, update failed.")
-        pass
+
+    # cancel
+    def cancel_addedit(self):
+        self.reset_data_entry(1)
