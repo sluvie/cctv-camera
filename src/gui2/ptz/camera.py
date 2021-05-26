@@ -119,15 +119,17 @@ class Camera_PTZ:
     ipaddress = None
     username = None
     password = None
+    status = -1
     cam = None
 
     # window
     exit_window_frame = False
 
-    def __init__(self, p_ipaddress, p_username, p_password):
+    def __init__(self, p_ipaddress, p_username, p_password, p_status):
         self.ipaddress = p_ipaddress
         self.username = p_username
         self.password = p_password
+        self.status = p_status
         self.exit_window_frame = False
 
     def connect(self):
@@ -135,6 +137,7 @@ class Camera_PTZ:
         cam_url = "rtsp://{}/1".format(self.ipaddress)
         try:
             self.cam = cv2.VideoCapture(cam_url)
+            print(self.cam)
         except cv2.error as e:
             print(e)
 
@@ -150,7 +153,7 @@ class Camera_PTZ:
             if (is_thumbnail):
                 frame = cv2.resize(frame, (width, height)) 
 
-            gray_im = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            #gray_im = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             a = Image.fromarray(frame)
             return (a)
         except:

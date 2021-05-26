@@ -3,6 +3,9 @@ from tkinter.ttk import *
 from tkinter import Menu, messagebox
 from PIL import Image, ImageTk
 
+# camera
+import cv2
+
 # system
 import sys
 import threading
@@ -65,12 +68,7 @@ class RootWindow(BaseWindow):
                     self.initialize_component()
                 elif win_login.accountid == -2:
                     sys.exit()
-
     
-    # Deleting (Calling destructor)
-    def __del__(self):
-        self.camera = None
-
 
     def initialize_component(self):
 
@@ -84,13 +82,18 @@ class RootWindow(BaseWindow):
         appmenu.add_separator()
         appmenu.add_command(label="Refresh", command=self.initialize_list_camera)
         appmenu.add_separator()
-        appmenu.add_command(label="Close", command=self.win.quit)
+        appmenu.add_command(label="Close", command=self.close_window)
         menubar.add_cascade(label="App Camera", menu=appmenu)
         self.win.config(menu=menubar)
 
         # show list camera
         self.initialize_list_camera()
     
+
+    def close_window(self):
+        self.win.destroy()
+        sys.exit()
+
 
     # initialize / refresh list camera
     def initialize_list_camera(self):
@@ -125,28 +128,33 @@ class RootWindow(BaseWindow):
 
             # button on / off
             text_onoff = "OFF"
+            color_onoff = "red"
             if self.camera_list[number_camera]["status"] == 1:
                 text_onoff = "ON"
-            b_onoff = tk.Button(f_information_camera, width=10, text=text_onoff, command=lambda k=self.camera_list[number_camera]["id"]: self.onoff_callback(k))
+                color_onoff = "green"
+            b_onoff = tk.Button(f_information_camera, width=10, text=text_onoff, bg=color_onoff, command=lambda k=self.camera_list[number_camera]["id"]: self.onoff_callback(k))
             b_onoff.grid(row=1, column=0, padx=5, pady=2)
+
+            # list of component
+            cam_function = Camera_PTZ(self.camera_list[number_camera]["ip"], self.username, self.password, self.camera_list[number_camera]["status"])
+            thread_connect = threading.Thread(target=cam_function.connect, daemon = True)
+            thread_thumb = threading.Thread(target=self.show_thumbnail, args=(cam_function, number_camera, l_ipcamera), daemon = True)
+            cam_component = {
+                "image": l_ipcamera,
+                "button": b_onoff,
+                "camera": cam_function,
+                "thread": thread_connect,
+                "thread_thumb": thread_thumb
+            }
+            self.camera_list_component.append(cam_component)
+            thread_connect.start()
+            thread_thumb.start()
 
             # button show
             b_show = tk.Button(f_information_camera, width=10, text='Show', command=lambda k=self.camera_list[number_camera]: self.show_callback(k))
             b_show.grid(row=1, column=1, padx=5, pady=2)
 
             f_information_camera.grid(row=row+1, column=column, padx=2, pady=2)
-
-            # list of component
-            cam_function = Camera_PTZ(self.camera_list[number_camera]["ip"], self.username, self.password)
-            thread_x = threading.Thread(target=cam_function.connect)
-            cam_component = {
-                "image": l_ipcamera,
-                "button": b_onoff,
-                "camera": cam_function,
-                "thread": thread_x
-            }
-            self.camera_list_component.append(cam_component)
-            thread_x.start()
 
             
             # column
@@ -159,24 +167,49 @@ class RootWindow(BaseWindow):
 
         # show on window 
         self.f_camera.pack(side=tk.TOP, fill=tk.BOTH, padx=5, pady=2)
-        
-        # setup the update callback
-        self.win.after(0, func=lambda: self.update_all())
 
+
+    # show thumbnail (loop)
+    def show_thumbnail(self, camera, index_camera, camera_image):
+        try:
+            while True:
+
+                if not self.camera_pause:
+
+                    camera.status = self.camera_list[index_camera]["status"]
+                
+                    # load default image
+                    load = Image.open("images/no-camera.png")
+
+                    # check active or not
+                    if camera.cam == None:
+                        print("camera not ready")
+                    elif camera.status == 1:
+                        success, frame = camera.cam.read()
+
+                        if not success:
+                            camera.connect()
+                        else:
+                            frame = cv2.resize(frame, (250, 200))
+                            load = Image.fromarray(frame)
+                    else:
+                        pass
+
+                    # refresh the image
+                    b = ImageTk.PhotoImage(image=load)
+                    camera_image.configure(image=b)
+                    camera_image.configure(text="")
+                    camera_image._image_cache = b  # avoid garbage collection
+
+                time.sleep(1)
+        except:
+            pass
 
 
     # setting camera window
     def show_setting_camera_window(self):
         win_setting = SettingCameraWindow(self.win, "Setting Camera")
         self.win.wait_window(win_setting.top)
-
-
-    # 
-    def open_url(self, event):
-        camera_label = event.widget
-        ipcamera = camera_label.cget("text")
-        # open frame camera
-        self.camera_ptz.render(ipcamera, self.username, self.password)
 
 
     # turn on / off camera
@@ -191,73 +224,32 @@ class RootWindow(BaseWindow):
             if not result:
                 messagebox.showerror(title=None, message="Failed to update data camera.")
 
+            text_onoff = "OFF"
+            color_onoff = "red"
+            if row["status"] == 1:
+                text_onoff = "ON"
+                color_onoff = "green"
+
+            for x in range(len(self.camera_list)):
+                if self.camera_list[x]["ip"] == row["ip"]:
+                    self.camera_list[x]["status"] = row["status"]
+                    self.camera_list_component[x]["button"].configure(text=text_onoff, bg=color_onoff)
+
 
     # show window control camera
-    def show_callback(self, camera):
+    def show_callback(self, camera_list):
 
+        self.camera_pause = True
+
+        # creatte custom form
+        #win_ptz = ControlPTZWindow(self.win, camera_list["ip"], camera_list["ip"], camera_list["username"], camera_list["password"])
+        #self.win.wait_window(win_ptz.top)
+
+
+        # render with default form
         for x in range(len(self.camera_list)):
-            if self.camera_list[x]["ip"] == camera["ip"]:
+            if self.camera_list[x]["ip"] == camera_list["ip"]:
                 self.camera_list_component[x]["camera"].render()
                 break
 
-        
-
-
-        # temporary, must build with single window
-        #camera.render(camera["ip"], camera["username"], camera["password"])
-
-        '''
-        self.camera_pause = True
-        win_control_ptz = ControlPTZWindow(self.win, "Control PTZ")
-        self.win.wait_window(win_control_ptz.top)
         self.camera_pause = False
-        '''
-
-    # update all component
-    def update_all(self):
-        
-        for x in range(len(self.camera_list)):
-            # update button on / off
-            text_onoff = "OFF"
-            if self.camera_list[x]["status"] == 1:
-                text_onoff = "ON"
-
-            # refresh button
-            self.camera_list_component[x]["button"].config(text=text_onoff)
-            self.camera_list_component[x]["button"].update()
-            
-            # update image
-            self.update_image(self.camera_list_component[x], self.camera_list[x]['status'])
-        
-        self.win.after(1000, func=lambda: self.update_all())
-
-
-    # update image camera
-    def update_image(self, camera_component, status):
-        if self.camera_pause == False:
-            if status == 1:
-                try:
-                    w, h = self.win.winfo_screenwidth() - 250, self.win.winfo_screenheight() - 250
-                    wi = int(abs(w / 5))
-                    hi = int(abs(h / 4))
-                    a = camera_component["camera"].capture_image(True, wi, hi)
-                    try:
-                        b = ImageTk.PhotoImage(image=a)
-                        camera_component["image"].configure(image=b)
-                        camera_component["image"].configure(text="")
-                        camera_component["image"]._image_cache = b  # avoid garbage collection        
-                        
-                        self.win.update()
-                    except Exception as e:
-                        print(e)
-                except:
-                    pass
-            else:
-                camera_component["image"].configure(image=None)
-                camera_component["image"]._image_cache = None
-                self.win.update()
-
-        else:
-            camera_component["image"].configure(image=None)
-            camera_component["image"]._image_cache = None
-            self.win.update()

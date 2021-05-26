@@ -38,7 +38,7 @@ class LoginWindow(BaseDialog):
         f_password = tk.Frame(self.top)
         l_password = tk.Label(f_password, width=15, text="Password", anchor="w")
         self.e_password = tk.Entry(f_password, show="*")
-        self.e_password.insert(tk.END, '215802')
+        self.e_password.insert(tk.END, '215802') #215802
         f_password.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
         l_password.pack(side=tk.LEFT)
         self.e_password.pack(side=tk.RIGHT, expand=tk.YES, fill=tk.X)

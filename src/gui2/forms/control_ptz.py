@@ -4,6 +4,13 @@ from tkinter.ttk import *
 from tkinter import messagebox
 from PIL import Image, ImageTk
 
+# camera
+import cv2
+
+# system
+import time
+import threading
+
 # form
 from forms.base import BaseWindow
 from forms.base import BaseDialog
@@ -14,8 +21,18 @@ from ptz.camera import Camera_PTZ
 
 class ControlPTZWindow(BaseDialog):
 
-    def __init__(self, parent, title):
+    image_camera = None
+
+    ip = ""
+    username = ""
+    password = ""
+
+    def __init__(self, parent, title, ip, username, password):
         super().__init__(parent, title, window_width=800, window_height=450)
+
+        self.ip = ip
+        self.username = username
+        self.password = password
 
         # add component
         self.add_component()
@@ -29,8 +46,8 @@ class ControlPTZWindow(BaseDialog):
         # frame left
         f_left = tk.Frame(f_main)
         # image label
-        l_ipcamera = tk.Label(f_left, text="camera")
-        l_ipcamera.grid(row=0, column=0, padx=5, pady=2)        
+        self.image_camera = tk.Label(f_left, text="")
+        self.image_camera.grid(row=0, column=0, padx=5, pady=2)        
         f_left.pack(side=tk.LEFT, fill=tk.BOTH, padx=5, pady=5)
 
         # frame right
@@ -56,59 +73,76 @@ class ControlPTZWindow(BaseDialog):
         f_main.pack()
 
         # initialization camera
-        self.camera_ptz = Camera_PTZ("192.168.13.100", "admin", "215802")
+        print(self.ip)
+        print(self.username)
+        print(self.password)
+        camera = Camera_PTZ(self.ip, self.username, self.password, 1)
+        thread_connect = threading.Thread(target=camera.connect, daemon = True)
+            
+        # thread camera
+        #thread_thumb = threading.Thread(target=self.show_thumbnail, args=(camera, ), daemon = True)
+        thread_connect.start()
+        #thread_thumb.start()
+
         
         # setup the update callback
-        self.top.after(0, func=lambda: self.update_all(l_ipcamera))
+        #self.top.after(0, func=lambda: self.update_all(l_ipcamera))
+
+
+    # show thumbnail (loop)
+    def show_thumbnail(self, camera):
+        try:
+            while True:
+
+                # load default image
+                load = Image.open("images/no-camera.png")
+
+                # check active or not
+                if camera.cam == None:
+                    print("camera ptz not ready")
+                else:
+                    success, frame = camera.cam.read()
+
+                    if not success:
+                        camera.connect()
+                    else:
+                        frame = cv2.resize(frame, (250, 200))
+                        load = Image.fromarray(frame)
+                        print(load)
+
+                # refresh the image
+                b = ImageTk.PhotoImage(image=load)
+                self.image_camera.configure(image=b)
+                self.image_camera.configure(text="")
+                self.image_camera._image_cache = b  # avoid garbage collection
+                time.sleep(1)
+        except:
+            pass
 
 
     def up_callback(self):
-        self.camera_ptz.up()
+        self.camera.up()
 
 
     def down_callback(self):
-        self.camera_ptz.down()
+        self.camera.down()
 
 
     def left_callback(self):
-        self.camera_ptz.left()
+        self.camera.left()
 
 
     def right_callback(self):
-        self.camera_ptz.right()
+        self.camera.right()
 
 
     def stop_callback(self):
-        self.camera_ptz.stop()
+        self.camera.stop()
 
 
     def zoomin_callback(self):
-        self.camera_ptz.zoomin()
+        self.camera.zoomin()
 
 
     def zoomout_callback(self):
-        self.camera_ptz.zoomout()
-
-
-    # update all component
-    def update_all(self, image_camera):
-        # update image
-        self.update_image(image_camera)
-        self.top.after(5, func=lambda: self.update_all(image_camera))
-
-    
-    # update image camera
-    def update_image(self, image_label):
-        try:
-            wi = 500
-            hi = 300
-            a = self.camera_ptz.capture_image(True, wi, hi)
-            b = ImageTk.PhotoImage(image=a)
-
-            image_label.configure(image=b)
-            image_label.configure(text="")
-            image_label._image_cache = b  # avoid garbage collection        
-            
-            self.top.update()
-        except Exception as e:
-            print(e)
+        self.camera.zoomout()
