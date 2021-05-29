@@ -42,6 +42,9 @@ class RootWindow(BaseWindow):
     camera_list = []
     camera_list_component = []
 
+    # thread
+    exit_thumb_thread = False
+
     def __init__(self, title, maximize):
         super().__init__(title, maximize)
 
@@ -80,7 +83,7 @@ class RootWindow(BaseWindow):
         preferencesmenu.add_command(label="Settings Camera", command=self.show_setting_camera_window)
         appmenu.add_cascade(label="Preferences", menu=preferencesmenu)
         appmenu.add_separator()
-        appmenu.add_command(label="Refresh", command=self.initialize_list_camera)
+        appmenu.add_command(label="Refresh", command=self.refresh)
         appmenu.add_separator()
         appmenu.add_command(label="Close", command=self.close_window)
         menubar.add_cascade(label="App Camera", menu=appmenu)
@@ -95,8 +98,23 @@ class RootWindow(BaseWindow):
         sys.exit()
 
 
+    def refresh(self):
+        # stop threading
+        self.exit_thumb_thread = True
+        for x in  range(len(self.camera_list_component)):
+            print(self.camera_list_component[x]["thread"])
+            self.camera_list_component[x]["image"] = None
+            self.camera_list_component[x]["button"] = None
+            self.camera_list_component[x]["camera"] = None
+            self.camera_list_component[x]["thread"] = None
+            self.camera_list_component[x]["thread_thumb"] = None
+
+        self.initialize_list_camera()
+
+
     # initialize / refresh list camera
     def initialize_list_camera(self):
+
         # get data camera
         self.camera_list = self.camera.list()
 
@@ -137,18 +155,19 @@ class RootWindow(BaseWindow):
 
             # list of component
             cam_function = Camera_PTZ(self.camera_list[number_camera]["ip"], self.username, self.password, self.camera_list[number_camera]["status"])
-            thread_connect = threading.Thread(target=cam_function.connect, daemon = True)
-            thread_thumb = threading.Thread(target=self.show_thumbnail, args=(cam_function, number_camera, l_ipcamera), daemon = True)
+            #thread_connect = threading.Thread(target=cam_function.connect, daemon = True)
+            #thread_thumb = threading.Thread(target=self.show_thumbnail, args=(cam_function, number_camera, l_ipcamera), daemon = True)
             cam_component = {
                 "image": l_ipcamera,
                 "button": b_onoff,
                 "camera": cam_function,
-                "thread": thread_connect,
-                "thread_thumb": thread_thumb
+                "thread": threading.Thread(target=cam_function.connect, daemon = True),
+                "thread_thumb": threading.Thread(target=self.show_thumbnail, args=(cam_function, number_camera, l_ipcamera), daemon = True)
             }
             self.camera_list_component.append(cam_component)
-            thread_connect.start()
-            thread_thumb.start()
+            
+            #thread_connect.start()
+            #thread_thumb.start()
 
             # button show
             b_show = tk.Button(f_information_camera, width=10, text='Show', command=lambda k=self.camera_list[number_camera]: self.show_callback(k))
@@ -165,6 +184,14 @@ class RootWindow(BaseWindow):
             number_camera = number_camera + 1
             pos_row = pos_row + 2
 
+
+        # start threading
+        self.exit_thumb_thread = False
+        for x in  range(len(self.camera_list_component)):
+            self.camera_list_component[x]["thread"].start()
+            self.camera_list_component[x]["thread_thumb"].start()
+
+
         # show on window 
         self.f_camera.pack(side=tk.TOP, fill=tk.BOTH, padx=5, pady=2)
 
@@ -173,6 +200,9 @@ class RootWindow(BaseWindow):
     def show_thumbnail(self, camera, index_camera, camera_image):
         try:
             while True:
+
+                if self.exit_thumb_thread == True:
+                    break
 
                 if not self.camera_pause:
 
@@ -218,7 +248,6 @@ class RootWindow(BaseWindow):
         if not row:
             messagebox.showerror(title=None, message="Failed to get data camera.")
         else:
-            print(row)
             row["status"] = row["status"] * -1
             result = self.camera.update(row)
             if not result:
