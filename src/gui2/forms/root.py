@@ -11,6 +11,7 @@ import sys
 import threading
 import time
 from collections import deque
+from datetime import datetime
 
 # form
 from forms.base import BaseWindow
@@ -23,7 +24,7 @@ from models.account import Account_m
 from models.camera import Camera_m
 
 # camera libraries
-from ptz.camera import Camera_PTZ
+from ptz.camera import Camera_PTZ, capture
 
 class RootWindow(BaseWindow):
 
@@ -162,16 +163,18 @@ class RootWindow(BaseWindow):
                 "button": b_onoff,
                 "camera": cam_function,
                 "thread": threading.Thread(target=cam_function.connect, daemon = True),
-                "thread_thumb": threading.Thread(target=self.show_thumbnail, args=(cam_function, number_camera, l_ipcamera), daemon = True)
+                "thread_thumb": threading.Thread(target=self.show_thumbnail, args=(cam_function, number_camera, l_ipcamera), daemon = True),
+                "capture_image": 0
             }
             self.camera_list_component.append(cam_component)
-            
-            #thread_connect.start()
-            #thread_thumb.start()
 
             # button show
             b_show = tk.Button(f_information_camera, width=10, text='Show', command=lambda k=self.camera_list[number_camera]: self.show_callback(k))
             b_show.grid(row=1, column=1, padx=5, pady=2)
+
+            # button capture picture (jpg)
+            b_capture_image = tk.Button(f_information_camera, width=10, text="Capture (JPG)", command=lambda k=number_camera: self.capture_image(k))
+            b_capture_image.grid(row=2, column=0, padx=5, pady=2)
 
             f_information_camera.grid(row=row+1, column=column, padx=2, pady=2)
 
@@ -196,6 +199,11 @@ class RootWindow(BaseWindow):
         self.f_camera.pack(side=tk.TOP, fill=tk.BOTH, padx=5, pady=2)
 
 
+    # capture image
+    def capture_image(self, index):
+        self.camera_list_component[index]["capture_image"] = 1
+
+
     # show thumbnail (loop)
     def show_thumbnail(self, camera, index_camera, camera_image):
         try:
@@ -207,7 +215,8 @@ class RootWindow(BaseWindow):
                 if not self.camera_pause:
 
                     camera.status = self.camera_list[index_camera]["status"]
-                
+                    capture_image = self.camera_list_component[index_camera]["capture_image"]
+                    
                     # load default image
                     load = Image.open("images/no-camera.png")
 
@@ -220,6 +229,15 @@ class RootWindow(BaseWindow):
                         if not success:
                             camera.connect()
                         else:
+                            # if capture image is active
+                            if capture_image == 1:
+                                date_time = datetime.now().strftime("%m%d%Y_%H%M%S")
+                                cv2.imwrite('data/export_' + date_time + '.jpg', frame)
+                                messagebox.showinfo(title="Capture Success", message="Capture success, data will be stored at folder <data>")
+                                self.camera_list_component[index_camera]["capture_image"] = 0
+                            
+
+                            # show the image
                             frame = cv2.resize(frame, (250, 200))
                             load = Image.fromarray(frame)
                     else:
