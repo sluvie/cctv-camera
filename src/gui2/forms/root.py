@@ -103,11 +103,10 @@ class RootWindow(BaseWindow):
         # stop threading
         self.exit_thumb_thread = True
         for x in  range(len(self.camera_list_component)):
-            print(self.camera_list_component[x]["thread"])
             self.camera_list_component[x]["image"] = None
             self.camera_list_component[x]["button"] = None
             self.camera_list_component[x]["camera"] = None
-            self.camera_list_component[x]["thread"] = None
+            #self.camera_list_component[x]["thread"] = None
             self.camera_list_component[x]["thread_thumb"] = None
 
         self.initialize_list_camera()
@@ -162,12 +161,20 @@ class RootWindow(BaseWindow):
                 "image": l_ipcamera,
                 "button": b_onoff,
                 "camera": cam_function,
+<<<<<<< HEAD
                 "thread": threading.Thread(target=cam_function.connect, daemon = True),
                 "thread_thumb": threading.Thread(target=self.show_thumbnail, args=(cam_function, number_camera, l_ipcamera), daemon = True),
                 "capture_image": 0
             }
             self.camera_list_component.append(cam_component)
 
+=======
+                #"thread": threading.Thread(target=cam_function.connect, daemon = True),
+                "thread_thumb": threading.Thread(target=self.show_thumbnail, args=(cam_function, number_camera, l_ipcamera), daemon = True)
+            }
+            self.camera_list_component.append(cam_component)
+            
+>>>>>>> fbf1f70286136bcd228b10ccb3babcd24bddc471
             # button show
             b_show = tk.Button(f_information_camera, width=10, text='Show', command=lambda k=self.camera_list[number_camera]: self.show_callback(k))
             b_show.grid(row=1, column=1, padx=5, pady=2)
@@ -191,7 +198,7 @@ class RootWindow(BaseWindow):
         # start threading
         self.exit_thumb_thread = False
         for x in  range(len(self.camera_list_component)):
-            self.camera_list_component[x]["thread"].start()
+            #self.camera_list_component[x]["thread"].start()
             self.camera_list_component[x]["thread_thumb"].start()
 
 
@@ -208,7 +215,7 @@ class RootWindow(BaseWindow):
     def show_thumbnail(self, camera, index_camera, camera_image):
         try:
             while True:
-
+                
                 if self.exit_thumb_thread == True:
                     break
 
@@ -223,6 +230,7 @@ class RootWindow(BaseWindow):
                     # check active or not
                     if camera.cam == None:
                         print("camera not ready")
+                        camera.connect()
                     elif camera.status == 1:
                         success, frame = camera.cam.read()
 
