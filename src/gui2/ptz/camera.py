@@ -117,6 +117,7 @@ def capture(p_ipaddress, p_user, p_password):
 class Camera_PTZ:
 
     ipaddress = None
+    port = None
     username = None
     password = None
     status = -1
@@ -125,8 +126,9 @@ class Camera_PTZ:
     # window
     exit_window_frame = False
 
-    def __init__(self, p_ipaddress, p_username, p_password, p_status):
+    def __init__(self, p_ipaddress, p_port, p_username, p_password, p_status):
         self.ipaddress = p_ipaddress
+        self.port = p_port
         self.username = p_username
         self.password = p_password
         self.status = p_status
@@ -210,44 +212,51 @@ class Camera_PTZ:
             self.zoomout()
 
         elif key == ord('h') or key == ord('H'):
-            stop_event()
+            self.stop()
 
 
     def left(self):
-        global URL
+        URL = "http://{}:{}/web/cgi-bin/hi3510/ptzctrl.cgi".format(self.ipaddress, self.port)
+
         PARAMS = {'-step': "0", "-act": "left", "-speed": "2"}
         r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(self.username, self.password))
 
     def right(self):
-        global URL
+        URL = "http://{}:{}/web/cgi-bin/hi3510/ptzctrl.cgi".format(self.ipaddress, self.port)
+
         PARAMS = {'-step': "0", "-act": "right", "-speed": "2"}
         r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(self.username, self.password))
         
     def up(self):
-        global URL
+        URL = "http://{}:{}/web/cgi-bin/hi3510/ptzctrl.cgi".format(self.ipaddress, self.port)
+
         PARAMS = {'-step': "0", "-act": "up", "-speed": "2"}
         r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(self.username, self.password))
     
     def down(self):
-        global URL
+        URL = "http://{}:{}/web/cgi-bin/hi3510/ptzctrl.cgi".format(self.ipaddress, self.port)
+
         PARAMS = {'-step': "0", "-act": "down", "-speed": "2"}
         r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(self.username, self.password))
     
     def stop(self):
-        global URL
+        URL = "http://{}:{}/web/cgi-bin/hi3510/ptzctrl.cgi".format(self.ipaddress, self.port)
+
         PARAMS = {'-step': "0", "-act": "stop", "-speed": "2"}
         r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(self.username, self.password))
     
     def zoomin(self):
-        global URL
+        URL = "http://{}:{}/web/cgi-bin/hi3510/ptzctrl.cgi".format(self.ipaddress, self.port)
+
         PARAMS = {'-step': "0", "-act": "zoomin", "-speed": "1"}
         r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(self.username, self.password))
-        time.sleep(0.02)
+        time.sleep(0.05)
         self.stop()
 
     def zoomout(self):
-        global URL
+        URL = "http://{}:{}/web/cgi-bin/hi3510/ptzctrl.cgi".format(self.ipaddress, self.port)
+
         PARAMS = {'-step': "0", "-act": "zoomout", "-speed": "1"}
         r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(self.username, self.password))
-        time.sleep(0.02)
+        time.sleep(0.05)
         self.stop()

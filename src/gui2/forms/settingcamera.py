@@ -19,10 +19,12 @@ class SettingCameraWindow(BaseDialog):
     # component
     tree_camera = None
     e_ipaddress = None
+    e_port = None
     e_username = None
     e_password = None
     e_idtext = None
     e_ipaddresstext = None
+    e_porttext = None
     e_usernametext = None
     e_passwordtext = None
     b_add = None
@@ -58,12 +60,14 @@ class SettingCameraWindow(BaseDialog):
         self.tree_camera.heading("#1", text="Id")
         self.tree_camera.column("#2", width=150, anchor=tk.CENTER)
         self.tree_camera.heading("#2", text="IP")
-        self.tree_camera.column("#3", anchor="w")
-        self.tree_camera.heading("#3", text="Username")
+        self.tree_camera.column("#3", width=150, anchor=tk.CENTER)
+        self.tree_camera.heading("#3", text="PORT")
         self.tree_camera.column("#4", anchor="w")
-        self.tree_camera.heading("#4", text="Password")
-        self.tree_camera.column("#5", width=50, anchor='c')
-        self.tree_camera.heading("#5", text="Status")
+        self.tree_camera.heading("#4", text="Username")
+        self.tree_camera.column("#5", anchor="w")
+        self.tree_camera.heading("#5", text="Password")
+        self.tree_camera.column("#6", width=50, anchor='c')
+        self.tree_camera.heading("#6", text="Status")
 
         self.refresh_tree_camera()
 
@@ -88,21 +92,29 @@ class SettingCameraWindow(BaseDialog):
         l_ipaddress.grid(row=1, column=0)
         self.e_ipaddress.grid(row=1, column=1)
 
+        # port
+        self.e_porttext = tk.StringVar()
+        l_port = tk.Label(f_dataentry, width=15, text="Port", anchor="w")
+        self.e_port = tk.Entry(f_dataentry, width=50, textvariable=self.e_ipaddresstext)
+        self.e_port.insert(tk.END, '')
+        l_port.grid(row=2, column=0)
+        self.e_port.grid(row=2, column=1)
+
         # username
         self.e_usernametext = tk.StringVar()
         l_username = tk.Label(f_dataentry, width=15, text="Username", anchor="w")
         self.e_username = tk.Entry(f_dataentry, width=50, textvariable=self.e_usernametext)
         self.e_username.insert(tk.END, '')
-        l_username.grid(row=2, column=0)
-        self.e_username.grid(row=2, column=1)
+        l_username.grid(row=3, column=0)
+        self.e_username.grid(row=3, column=1)
 
         # password
         self.e_passwordtext = tk.StringVar()
         l_password = tk.Label(f_dataentry, width=15, text="Password", anchor="w")
         self.e_password = tk.Entry(f_dataentry, width=50, textvariable=self.e_passwordtext)
         self.e_password.insert(tk.END, '')
-        l_password.grid(row=3, column=0)
-        self.e_password.grid(row=3, column=1)
+        l_password.grid(row=4, column=0)
+        self.e_password.grid(row=4, column=1)
 
         f_button = Frame(f_dataentry)
         # button add
@@ -120,7 +132,7 @@ class SettingCameraWindow(BaseDialog):
         # button close
         self.b_cancel = tk.Button(f_button, width=10, text='Cancel', command=lambda: self.cancel_addedit())
         self.b_cancel.grid(row=0, column=4)
-        f_button.grid(row=4, column=0, columnspan=5)
+        f_button.grid(row=5, column=0, columnspan=5)
 
         # event
         self.tree_camera.bind("<<TreeviewSelect>>", self.doubleclick_callback)
@@ -146,6 +158,7 @@ class SettingCameraWindow(BaseDialog):
             values=(
                 row["id"],
                 row["ip"],
+                row["port"],
                 row["username"],
                 row["password"],
                 "OFF" if row["status"] == -1 else "ON" if row["status"] == 1 else ""
@@ -164,8 +177,9 @@ class SettingCameraWindow(BaseDialog):
             row = self.tree_camera.item(item, "value")
             self.e_idtext.set(row[0])
             self.e_ipaddresstext.set(row[1])
-            self.e_usernametext.set(row[2])
-            self.e_passwordtext.set(row[3])
+            self.e_porttext.set(row[2])
+            self.e_usernametext.set(row[3])
+            self.e_passwordtext.set(row[4])
         except:
             self.reset_data_entry(1)
 
@@ -178,9 +192,11 @@ class SettingCameraWindow(BaseDialog):
         if status == 1:
             self.e_idtext.set("-1")
             self.e_ipaddresstext.set("")
+            self.e_porttext.set("")
             self.e_usernametext.set("")
             self.e_passwordtext.set("")
             self.e_ipaddress.configure(state=DISABLED)
+            self.e_port.configure(state=DISABLED)
             self.e_username.configure(state=DISABLED)
             self.e_password.configure(state=DISABLED)
             self.b_add["state"] = NORMAL
@@ -191,9 +207,11 @@ class SettingCameraWindow(BaseDialog):
         elif status == 2:
             self.e_idtext.set("-1")
             self.e_ipaddresstext.set("")
+            self.e_porttext.set("")
             self.e_usernametext.set("")
             self.e_passwordtext.set("")
             self.e_ipaddress.configure(state=NORMAL)
+            self.e_port.configure(state=NORMAL)
             self.e_username.configure(state=NORMAL)
             self.e_password.configure(state=NORMAL)
             self.b_add["state"] = DISABLED
@@ -203,6 +221,7 @@ class SettingCameraWindow(BaseDialog):
             self.b_cancel["state"] = NORMAL
         elif status == 3:
             self.e_ipaddress.configure(state=NORMAL)
+            self.e_port.configure(state=NORMAL)
             self.e_username.configure(state=NORMAL)
             self.e_password.configure(state=NORMAL)
             self.b_add["state"] = DISABLED
@@ -247,6 +266,7 @@ class SettingCameraWindow(BaseDialog):
             row = {
                 'id': newid + 1, 
                 'ip': self.e_ipaddresstext.get(), 
+                'port': self.e_porttext.get(), 
                 'username': self.e_usernametext.get(), 
                 'password': self.e_passwordtext.get(), 
                 'status': -1
@@ -262,6 +282,7 @@ class SettingCameraWindow(BaseDialog):
             row = self.camera_list.get(int(id))
             if row:
                 row["ip"] = self.e_ipaddresstext.get()
+                row["port"] = self.e_porttext.get()
                 row["username"] = self.e_usernametext.get()
                 row["password"] = self.e_passwordtext.get()
                 if self.camera_list.update(row):

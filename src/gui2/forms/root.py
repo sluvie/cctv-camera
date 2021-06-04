@@ -154,27 +154,22 @@ class RootWindow(BaseWindow):
             b_onoff.grid(row=1, column=0, padx=5, pady=2)
 
             # list of component
-            cam_function = Camera_PTZ(self.camera_list[number_camera]["ip"], self.username, self.password, self.camera_list[number_camera]["status"])
+            cam_function = Camera_PTZ(self.camera_list[number_camera]["ip"], self.camera_list[number_camera]["port"], self.username, self.password, self.camera_list[number_camera]["status"])
             #thread_connect = threading.Thread(target=cam_function.connect, daemon = True)
             #thread_thumb = threading.Thread(target=self.show_thumbnail, args=(cam_function, number_camera, l_ipcamera), daemon = True)
             cam_component = {
                 "image": l_ipcamera,
                 "button": b_onoff,
                 "camera": cam_function,
-<<<<<<< HEAD
                 "thread": threading.Thread(target=cam_function.connect, daemon = True),
                 "thread_thumb": threading.Thread(target=self.show_thumbnail, args=(cam_function, number_camera, l_ipcamera), daemon = True),
                 "capture_image": 0
             }
             self.camera_list_component.append(cam_component)
 
-=======
                 #"thread": threading.Thread(target=cam_function.connect, daemon = True),
-                "thread_thumb": threading.Thread(target=self.show_thumbnail, args=(cam_function, number_camera, l_ipcamera), daemon = True)
-            }
-            self.camera_list_component.append(cam_component)
+                #"thread_thumb": threading.Thread(target=self.show_thumbnail, args=(cam_function, number_camera, l_ipcamera), daemon = True)
             
->>>>>>> fbf1f70286136bcd228b10ccb3babcd24bddc471
             # button show
             b_show = tk.Button(f_information_camera, width=10, text='Show', command=lambda k=self.camera_list[number_camera]: self.show_callback(k))
             b_show.grid(row=1, column=1, padx=5, pady=2)
