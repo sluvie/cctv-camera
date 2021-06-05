@@ -1,1 +1,1 @@
-{"_default": {"1": {"id": 1, "ip": "192.168.13.100", "port": "12345", "username": "admin", "password": "215802", "status": 1}, "2": {"id": 2, "ip": "192.168.13.101", "port": "12345", "username": "admin", "password": "215802", "status": -1}}}
+{"_default": {"1": {"id": 1, "ip": "192.168.13.100", "port": "12345", "username": "admin", "password": "215802", "status": 1}, "2": {"id": 2, "ip": "192.168.13.101", "port": "534", "username": "admin", "password": "215802", "status": -1}}}

@@ -35,7 +35,7 @@ class SettingCameraWindow(BaseDialog):
 
     
     def __init__(self, parent, title):
-        super().__init__(parent, title, window_width=800, window_height=400)
+        super().__init__(parent, title, window_width=800, window_height=450)
 
         # models
         self.camera_list = Camera_m()
@@ -49,7 +49,7 @@ class SettingCameraWindow(BaseDialog):
 
         # tree data camera
         f_tree_camera = Frame(self.top)
-        self.tree_camera = Treeview(f_tree_camera, column=("c1", "c2", "c3", "c4", "c5"), show='headings')
+        self.tree_camera = Treeview(f_tree_camera, column=("c1", "c2", "c3", "c4", "c5", "c6"), show='headings')
         self.tree_camera.pack(side='left')
 
         vsb = Scrollbar(f_tree_camera, orient="vertical", command=self.tree_camera.yview)
@@ -95,7 +95,7 @@ class SettingCameraWindow(BaseDialog):
         # port
         self.e_porttext = tk.StringVar()
         l_port = tk.Label(f_dataentry, width=15, text="Port", anchor="w")
-        self.e_port = tk.Entry(f_dataentry, width=50, textvariable=self.e_ipaddresstext)
+        self.e_port = tk.Entry(f_dataentry, width=50, textvariable=self.e_porttext)
         self.e_port.insert(tk.END, '')
         l_port.grid(row=2, column=0)
         self.e_port.grid(row=2, column=1)
