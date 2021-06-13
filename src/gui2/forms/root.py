@@ -173,7 +173,7 @@ class RootWindow(BaseWindow):
 
             # button access sd card
             b_sd_card = tk.Button(f_information_camera, width=10, text="SD CARD", command=lambda k=number_camera: self.sdcard(k))
-            b_sd_card.grid(row=3, column=0, padx=5, pady=2)
+            b_sd_card.grid(row=3, column=0, columnspan=2, padx=5, pady=2)
 
             f_information_camera.grid(row=row+1, column=column, padx=2, pady=2)
 
@@ -236,9 +236,10 @@ class RootWindow(BaseWindow):
             self.result_movie = cv2.VideoWriter('data/export_' + date_time + '.avi', 
                                     cv2.VideoWriter_fourcc(*'MJPG'),
                                     10, size)
-            self.camera_list_component[index]["button_capture_movie"].configure(text="Saving Movie... (Press to stop)")
+            self.camera_list_component[index]["button_capture_movie"].configure(text="Click to stop")
         else:
             self.camera_list_component[index]["button_capture_movie"].configure(text="Capture (MP4)")
+            messagebox.showinfo(title="Capture Success", message="Capture success, data will be stored at folder <data>")
 
     # show sdcard access
     def sdcard(self, index):
@@ -299,7 +300,7 @@ class RootWindow(BaseWindow):
                     camera_image.configure(text="")
                     camera_image._image_cache = b  # avoid garbage collection
 
-                time.sleep(1)
+                #time.sleep(1)
         except:
             pass
 
@@ -339,14 +340,16 @@ class RootWindow(BaseWindow):
         self.camera_pause = True
 
         # creatte custom form
-        #win_ptz = ControlPTZWindow(self.win, camera_list["ip"], camera_list["ip"], camera_list["username"], camera_list["password"])
-        #self.win.wait_window(win_ptz.top)
+        win_ptz = ControlPTZWindow(self.win, camera_list["ip"], camera_list["ip"], camera_list["port"], camera_list["username"], camera_list["password"])
+        self.win.wait_window(win_ptz.top)
 
 
         # render with default form
+        '''
         for x in range(len(self.camera_list)):
             if self.camera_list[x]["ip"] == camera_list["ip"]:
                 self.camera_list_component[x]["camera"].render()
                 break
+        '''
 
         self.camera_pause = False

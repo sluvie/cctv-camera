@@ -24,13 +24,16 @@ class ControlPTZWindow(BaseDialog):
     image_camera = None
 
     ip = ""
+    port = 0
     username = ""
     password = ""
+    camera = None
 
-    def __init__(self, parent, title, ip, username, password):
-        super().__init__(parent, title, window_width=800, window_height=450)
+    def __init__(self, parent, title, ip, port, username, password):
+        super().__init__(parent, title, window_width=800, window_height=600)
 
         self.ip = ip
+        self.port = port
         self.username = username
         self.password = password
 
@@ -73,24 +76,15 @@ class ControlPTZWindow(BaseDialog):
         f_main.pack()
 
         # initialization camera
-        print(self.ip)
-        print(self.username)
-        print(self.password)
-        camera = Camera_PTZ(self.ip, self.username, self.password, 1)
-        thread_connect = threading.Thread(target=camera.connect, daemon = True)
-            
-        # thread camera
-        #thread_thumb = threading.Thread(target=self.show_thumbnail, args=(camera, ), daemon = True)
+        self.camera = Camera_PTZ(self.ip, self.port, self.username, self.password, 1)
+        thread_connect = threading.Thread(target=self.camera.connect, daemon = True)    
+        thread_thumb = threading.Thread(target=self.show_thumbnail, daemon = True)
         thread_connect.start()
-        #thread_thumb.start()
-
-        
-        # setup the update callback
-        #self.top.after(0, func=lambda: self.update_all(l_ipcamera))
+        thread_thumb.start()
 
 
     # show thumbnail (loop)
-    def show_thumbnail(self, camera):
+    def show_thumbnail(self):
         try:
             while True:
 
@@ -98,24 +92,23 @@ class ControlPTZWindow(BaseDialog):
                 load = Image.open("images/no-camera.png")
 
                 # check active or not
-                if camera.cam == None:
+                if self.camera.cam == None:
                     print("camera ptz not ready")
                 else:
-                    success, frame = camera.cam.read()
+                    success, frame = self.camera.cam.read()
 
                     if not success:
-                        camera.connect()
+                        self.camera.connect()
                     else:
-                        frame = cv2.resize(frame, (250, 200))
+                        frame = cv2.resize(frame, (500, 500))
                         load = Image.fromarray(frame)
-                        print(load)
 
                 # refresh the image
                 b = ImageTk.PhotoImage(image=load)
                 self.image_camera.configure(image=b)
                 self.image_camera.configure(text="")
                 self.image_camera._image_cache = b  # avoid garbage collection
-                time.sleep(1)
+                #time.sleep(1)
         except:
             pass
 
