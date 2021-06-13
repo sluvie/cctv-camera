@@ -158,15 +158,6 @@ class RootWindow(BaseWindow):
             cam_function = Camera_PTZ(self.camera_list[number_camera]["ip"], self.camera_list[number_camera]["port"], self.username, self.password, self.camera_list[number_camera]["status"])
             #thread_connect = threading.Thread(target=cam_function.connect, daemon = True)
             #thread_thumb = threading.Thread(target=self.show_thumbnail, args=(cam_function, number_camera, l_ipcamera), daemon = True)
-            cam_component = {
-                "image": l_ipcamera,
-                "button": b_onoff,
-                "camera": cam_function,
-                "thread": threading.Thread(target=cam_function.connect, daemon = True),
-                "thread_thumb": threading.Thread(target=self.show_thumbnail, args=(cam_function, number_camera, l_ipcamera), daemon = True),
-                "capture_image": 0
-            }
-            self.camera_list_component.append(cam_component)
             
             # button show
             b_show = tk.Button(f_information_camera, width=10, text='Show', command=lambda k=self.camera_list[number_camera]: self.show_callback(k))
@@ -177,7 +168,7 @@ class RootWindow(BaseWindow):
             b_capture_image.grid(row=2, column=0, padx=5, pady=2)
 
             # button capture movie (mp4)
-            b_capture_movie = tk.Button(f_information_camera, width=10, text="Capture (MP4)", command=lambda k=number_camera: self.capture_image(k))
+            b_capture_movie = tk.Button(f_information_camera, width=10, text="Capture (MP4)", command=lambda k=number_camera: self.capture_movie(k))
             b_capture_movie.grid(row=2, column=1, padx=5, pady=2)
 
             # button access sd card
@@ -185,6 +176,19 @@ class RootWindow(BaseWindow):
             b_sd_card.grid(row=3, column=0, padx=5, pady=2)
 
             f_information_camera.grid(row=row+1, column=column, padx=2, pady=2)
+
+            # register the component to array
+            cam_component = {
+                "image": l_ipcamera,
+                "button": b_onoff,
+                "button_capture_movie": b_capture_movie,
+                "camera": cam_function,
+                "thread": threading.Thread(target=cam_function.connect, daemon = True),
+                "thread_thumb": threading.Thread(target=self.show_thumbnail, args=(cam_function, number_camera, l_ipcamera), daemon = True),
+                "capture_image": -1,
+                "capture_movie": -1
+            }
+            self.camera_list_component.append(cam_component)
 
             
             # column
@@ -212,6 +216,30 @@ class RootWindow(BaseWindow):
         self.camera_list_component[index]["capture_image"] = 1
 
 
+    # capture movie
+    def capture_movie(self, index):
+        self.camera_list_component[index]["capture_movie"] = self.camera_list_component[index]["capture_movie"] * -1
+        camera = self.camera_list_component[index]["camera"]
+
+        if self.camera_list_component[index]["capture_movie"] == 1:
+            # initialize the result of movie
+            # We need to set resolutions.
+            # so, convert them from float to integer.
+            frame_width = int(camera.cam.get(3))
+            frame_height = int(camera.cam.get(4))
+            size = (frame_width, frame_height)
+
+            # Below VideoWriter object will create
+            # a frame of above defined The output 
+            # is stored in ' file.
+            date_time = datetime.now().strftime("%m%d%Y_%H%M%S")
+            self.result_movie = cv2.VideoWriter('data/export_' + date_time + '.avi', 
+                                    cv2.VideoWriter_fourcc(*'MJPG'),
+                                    10, size)
+            self.camera_list_component[index]["button_capture_movie"].configure(text="Saving Movie... (Press to stop)")
+        else:
+            self.camera_list_component[index]["button_capture_movie"].configure(text="Capture (MP4)")
+
     # show sdcard access
     def sdcard(self, index):
         win_sdcard = SDCardWindow(self.win, "SD Card", self.camera_list[index])
@@ -221,7 +249,7 @@ class RootWindow(BaseWindow):
     # show thumbnail (loop)
     def show_thumbnail(self, camera, index_camera, camera_image):
         try:
-            while Tßrue:
+            while True:
                 
                 if self.exit_thumb_thread == True:
                     break
@@ -230,6 +258,7 @@ class RootWindow(BaseWindow):
 
                     camera.status = self.camera_list[index_camera]["status"]
                     capture_image = self.camera_list_component[index_camera]["capture_image"]
+                    capture_movie = self.camera_list_component[index_camera]["capture_movie"]
                     
                     # load default image
                     load = Image.open("images/no-camera.png")
@@ -249,8 +278,14 @@ class RootWindow(BaseWindow):
                                 date_time = datetime.now().strftime("%m%d%Y_%H%M%S")
                                 cv2.imwrite('data/export_' + date_time + '.jpg', frame)
                                 messagebox.showinfo(title="Capture Success", message="Capture success, data will be stored at folder <data>")
-                                self.camera_list_component[index_camera]["capture_image"] = 0
+                                self.camera_list_component[index_camera]["capture_image"] = -1
                             
+
+                            # if capture movie is active
+                            if capture_movie == 1:
+                                # Write the frame into the file 
+                                self.result_movie.write(frame)
+
 
                             # show the image
                             frame = cv2.resize(frame, (250, 200))
