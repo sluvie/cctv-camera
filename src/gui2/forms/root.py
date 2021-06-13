@@ -217,17 +217,11 @@ class RootWindow(BaseWindow):
         win_sdcard = SDCardWindow(self.win, "SD Card", self.camera_list[index])
         self.win.wait_window(win_sdcard.top)
 
-        '''
-
-        data_camera = self.camera_list[index]
-        print(data_camera)
-        '''
-
 
     # show thumbnail (loop)
     def show_thumbnail(self, camera, index_camera, camera_image):
         try:
-            while True:
+            while Tßrue:
                 
                 if self.exit_thumb_thread == True:
                     break
