@@ -175,6 +175,11 @@ class RootWindow(BaseWindow):
             b_sd_card = tk.Button(f_information_camera, width=10, text="SD CARD", command=lambda k=number_camera: self.sdcard(k))
             b_sd_card.grid(row=3, column=0, columnspan=2, padx=5, pady=2)
 
+            
+            # button show (old)
+            b_show_old = tk.Button(f_information_camera, width=10, text='Show (Old)', command=lambda k=self.camera_list[number_camera]: self.showold_callback(k))
+            b_show_old.grid(row=4, column=0, columnspan=2, padx=5, pady=2)
+
             f_information_camera.grid(row=row+1, column=column, padx=2, pady=2)
 
             # register the component to array
@@ -351,5 +356,19 @@ class RootWindow(BaseWindow):
                 self.camera_list_component[x]["camera"].render()
                 break
         '''
+
+        self.camera_pause = False
+
+
+    # show window control camera (old)
+    def showold_callback(self, camera_list):
+
+        self.camera_pause = True
+
+        # render with default form
+        for x in range(len(self.camera_list)):
+            if self.camera_list[x]["ip"] == camera_list["ip"]:
+                self.camera_list_component[x]["camera"].render()
+                break
 
         self.camera_pause = False
