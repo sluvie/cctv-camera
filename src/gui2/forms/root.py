@@ -17,6 +17,7 @@ from datetime import datetime
 from forms.base import BaseWindow
 from forms.login import LoginWindow
 from forms.settingcamera import SettingCameraWindow
+from forms.sdcard import SDCardWindow
 from forms.control_ptz import ControlPTZWindow
 
 # models
@@ -166,9 +167,6 @@ class RootWindow(BaseWindow):
                 "capture_image": 0
             }
             self.camera_list_component.append(cam_component)
-
-                #"thread": threading.Thread(target=cam_function.connect, daemon = True),
-                #"thread_thumb": threading.Thread(target=self.show_thumbnail, args=(cam_function, number_camera, l_ipcamera), daemon = True)
             
             # button show
             b_show = tk.Button(f_information_camera, width=10, text='Show', command=lambda k=self.camera_list[number_camera]: self.show_callback(k))
@@ -177,6 +175,14 @@ class RootWindow(BaseWindow):
             # button capture picture (jpg)
             b_capture_image = tk.Button(f_information_camera, width=10, text="Capture (JPG)", command=lambda k=number_camera: self.capture_image(k))
             b_capture_image.grid(row=2, column=0, padx=5, pady=2)
+
+            # button capture movie (mp4)
+            b_capture_movie = tk.Button(f_information_camera, width=10, text="Capture (MP4)", command=lambda k=number_camera: self.capture_image(k))
+            b_capture_movie.grid(row=2, column=1, padx=5, pady=2)
+
+            # button access sd card
+            b_sd_card = tk.Button(f_information_camera, width=10, text="SD CARD", command=lambda k=number_camera: self.sdcard(k))
+            b_sd_card.grid(row=3, column=0, padx=5, pady=2)
 
             f_information_camera.grid(row=row+1, column=column, padx=2, pady=2)
 
@@ -204,6 +210,18 @@ class RootWindow(BaseWindow):
     # capture image
     def capture_image(self, index):
         self.camera_list_component[index]["capture_image"] = 1
+
+
+    # show sdcard access
+    def sdcard(self, index):
+        win_sdcard = SDCardWindow(self.win, "SD Card", self.camera_list[index])
+        self.win.wait_window(win_sdcard.top)
+
+        '''
+
+        data_camera = self.camera_list[index]
+        print(data_camera)
+        '''
 
 
     # show thumbnail (loop)
