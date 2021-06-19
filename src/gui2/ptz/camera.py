@@ -1,16 +1,11 @@
 import cv2
-cv2.ocl.setUseOpenCL(False)
 
-import numpy as np
 import time
 import requests
 from requests.auth import HTTPBasicAuth
 
 from PIL import Image, ImageTk
 
-camera_url = 'rtsp://192.168.13.100/1'
-username = 'admin'
-password = '215802'
 exit_program = 0
 screen_width = 800
 screen_height = 600
@@ -18,99 +13,6 @@ screen_height = 600
 
 screen_width_thumb = 320
 screen_height_thumb = 240
-
-URL = "http://192.168.13.100/web/cgi-bin/hi3510/ptzctrl.cgi"
-
-
-def home_event():
-    PARAMS = {'-step': "0", "-act": "home", "-speed": "1"}
-    r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
-
-def stop_event():
-    PARAMS = {'-step': "0", "-act": "stop", "-speed": "1"}
-    r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
-
-
-def event_keyboard(k):
-    global exit_program
-    global username
-    global password
-
-
-    if k == 27:
-        exit_program = 1
-
-    elif k == ord('w') or k == ord('W'):
-        PARAMS = {'-step': "0", "-act": "up", "-speed": "1"}
-        r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
-        
-    elif k == ord('a') or k == ord('A'):
-        PARAMS = {'-step': "0", "-act": "left", "-speed": "1"}
-        r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
-        
-    elif k == ord('s') or k == ord('S'):
-        PARAMS = {'-step': "0", "-act": "down", "-speed": "1"}
-        r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
-        
-    elif k == ord('d') or k == ord('D'):
-        PARAMS = {'-step': "0", "-act": "right", "-speed": "1"}
-        r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
-        
-    elif k == ord('z') or k == ord('Z'):
-        PARAMS = {'-step': "0", "-act": "zoomin", "-speed": "1"}
-        r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
-        time.sleep(0.01)
-        stop_event()
-    
-    elif k == ord('x') or k == ord('X'):
-        PARAMS = {'-step': "0", "-act": "zoomout", "-speed": "1"}
-        r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
-        time.sleep(0.01)
-        stop_event()
-
-    elif k == ord('h') or k == ord('H'):
-        stop_event()    
-
-
-
-def capture(p_ipaddress, p_user, p_password):
-    global exit_program
-    global username
-    global password
-
-    # connect to camera
-    camera_url = "rtsp://{}/1".format(p_ipaddress)
-    username = p_user
-    password = p_password
-
-
-    try:
-        cap = cv2.VideoCapture(camera_url)
-        exit_program = 0
-
-        while True:
-            if exit_program == 1:
-                break
-
-            # capture the frames
-            success, frame = cap.read()
-
-            if not success:
-                time.sleep(0.02)
-                break
-
-            frame = cv2.resize(frame, (screen_width, screen_height)) 
-            cv2.imshow('frame', frame)
-
-            # grab event keyboard
-            event_keyboard(cv2.waitKey(1) & 0xff)
-
-        
-        # destroy all camera
-        cap.release()
-        cv2.destroyAllWindows()
-    except:
-        pass
 
 
 # MAIN CLASS FOR CAMERA HANDLE
@@ -121,12 +23,18 @@ class Camera_PTZ:
     username = None
     password = None
     status = -1
-    cam = None
+
+    # camera
+    vid = None
+    width = 0
+    height = 0
 
     # window
     exit_window_frame = False
 
-    def __init__(self, p_ipaddress, p_port, p_username, p_password, p_status):
+
+    def __init__(self, p_ipaddress, p_port, p_username, p_password, p_status = 1):
+        # initialize
         self.ipaddress = p_ipaddress
         self.port = p_port
         self.username = p_username
@@ -134,17 +42,48 @@ class Camera_PTZ:
         self.status = p_status
         self.exit_window_frame = False
 
+
+    # connect to camera
     def connect(self):
         # init the camera
-        cam_url = "rtsp://{}/1".format(self.ipaddress)
+        video_source = "rtsp://{}/1".format(self.ipaddress)
         try:
-            self.cam = cv2.VideoCapture(cam_url)
-            print(self.cam)
+            # Open the video source
+            self.vid = cv2.VideoCapture(video_source)
+            if not self.vid.isOpened():
+                print("Unable to open video source {}".format(video_source))
+                raise ValueError("Unable to open video source", video_source)
+            else:
+                print(self.vid)
+
+            # Get video source width and height
+            self.width = self.vid.get(cv2.CAP_PROP_FRAME_WIDTH)
+            self.height = self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
         except cv2.error as e:
             print(e)
 
-    def disconnect(self):
-        self.cam = None
+
+    
+    def get_frame(self):
+        if self.vid.isOpened():
+            ret, frame = self.vid.read()
+            if ret:
+                # Return a boolean success flag and the current frame converted to BGR
+                return (ret, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+            else:
+                return (ret, None)
+        else:
+            return (ret, None)
+
+
+    
+    # Release the video source when the object is destroyed
+    def __del__(self):
+        if self.vid == None:
+            pass
+        else:
+            if self.vid.isOpened():
+                self.vid.release()
 
     def capture_image(self, is_thumbnail, width, height):
         try:

@@ -1,7 +1,13 @@
+# tkinter
+import tkinter
+import PIL.Image
+import PIL.ImageTk
+'''
 import tkinter as tk
 from tkinter.ttk import *
 from tkinter import Menu, messagebox
 from PIL import Image, ImageTk
+'''
 
 # camera
 import cv2
@@ -25,7 +31,7 @@ from models.account import Account_m
 from models.camera import Camera_m
 
 # camera libraries
-from ptz.camera import Camera_PTZ, capture
+from ptz.camera import Camera_PTZ
 
 class RootWindow(BaseWindow):
 
@@ -54,6 +60,7 @@ class RootWindow(BaseWindow):
         # self.win.resizable(False, False)
         self.win.attributes('-fullscreen', True)
 
+        # database camera
         self.camera = Camera_m()
 
         # show form login
@@ -79,9 +86,9 @@ class RootWindow(BaseWindow):
 
         # menu bar
         # main menu
-        menubar = Menu(self.win)
-        appmenu = Menu(menubar, tearoff=0)
-        preferencesmenu = Menu(self.win, tearoff=0)
+        menubar = tkinter.Menu(self.win)
+        appmenu = tkinter.Menu(menubar, tearoff=0)
+        preferencesmenu = tkinter.Menu(self.win, tearoff=0)
         preferencesmenu.add_command(label="Settings Camera", command=self.show_setting_camera_window)
         appmenu.add_cascade(label="Preferences", menu=preferencesmenu)
         appmenu.add_separator()
@@ -116,10 +123,12 @@ class RootWindow(BaseWindow):
     # initialize / refresh list camera
     def initialize_list_camera(self):
 
+        self.delay = 15
+
         # get data camera
         self.camera_list = self.camera.list()
 
-        # loop all camera (sampling with 1 camera)
+        # array of camera
         self.camera_list_component = []
 
         columns = 5
@@ -127,75 +136,17 @@ class RootWindow(BaseWindow):
         
         if not (self.f_camera == None):
             self.f_camera.destroy()
-        self.f_camera = tk.Frame(self.win)
+        
+        self.f_camera = tkinter.Frame(self.win)
         number_camera = 0
         pos_row = 0
         row = 0
         column = 0
         while number_camera < len(self.camera_list):
             # add component
-            # image
-            l_ipcamera = tk.Label(self.f_camera, text="")
-            l_ipcamera.grid(row=row, column=column, padx=5, pady=2)
-            
-            # information camera
-            f_information_camera = tk.Frame(self.f_camera)
+            self.addcomponent(self.f_camera, number_camera)
 
-            # text
-            l_camera_text = tk.Label(f_information_camera, text="Camera {}".format(self.camera_list[number_camera]["ip"]))# label for the video frame
-            l_camera_text.grid(row=0, column=0, columnspan=2, padx=5, pady=2)
-
-            # button on / off
-            text_onoff = "OFF"
-            color_onoff = "red"
-            if self.camera_list[number_camera]["status"] == 1:
-                text_onoff = "ON"
-                color_onoff = "green"
-            b_onoff = tk.Button(f_information_camera, width=10, text=text_onoff, bg=color_onoff, command=lambda k=self.camera_list[number_camera]["id"]: self.onoff_callback(k))
-            b_onoff.grid(row=1, column=0, padx=5, pady=2)
-
-            # list of component
-            cam_function = Camera_PTZ(self.camera_list[number_camera]["ip"], self.camera_list[number_camera]["port"], self.username, self.password, self.camera_list[number_camera]["status"])
-            #thread_connect = threading.Thread(target=cam_function.connect, daemon = True)
-            #thread_thumb = threading.Thread(target=self.show_thumbnail, args=(cam_function, number_camera, l_ipcamera), daemon = True)
-            
-            # button show
-            b_show = tk.Button(f_information_camera, width=10, text='Show', command=lambda k=self.camera_list[number_camera]: self.show_callback(k))
-            b_show.grid(row=1, column=1, padx=5, pady=2)
-
-            # button capture picture (jpg)
-            b_capture_image = tk.Button(f_information_camera, width=10, text="Capture (JPG)", command=lambda k=number_camera: self.capture_image(k))
-            b_capture_image.grid(row=2, column=0, padx=5, pady=2)
-
-            # button capture movie (mp4)
-            b_capture_movie = tk.Button(f_information_camera, width=10, text="Capture (MP4)", command=lambda k=number_camera: self.capture_movie(k))
-            b_capture_movie.grid(row=2, column=1, padx=5, pady=2)
-
-            # button access sd card
-            b_sd_card = tk.Button(f_information_camera, width=10, text="SD CARD", command=lambda k=number_camera: self.sdcard(k))
-            b_sd_card.grid(row=3, column=0, columnspan=2, padx=5, pady=2)
-
-            
-            # button show (old)
-            b_show_old = tk.Button(f_information_camera, width=10, text='Show (Old)', command=lambda k=self.camera_list[number_camera]: self.showold_callback(k))
-            b_show_old.grid(row=4, column=0, columnspan=2, padx=5, pady=2)
-
-            f_information_camera.grid(row=row+1, column=column, padx=2, pady=2)
-
-            # register the component to array
-            cam_component = {
-                "image": l_ipcamera,
-                "button": b_onoff,
-                "button_capture_movie": b_capture_movie,
-                "camera": cam_function,
-                "thread": threading.Thread(target=cam_function.connect, daemon = True),
-                "thread_thumb": threading.Thread(target=self.show_thumbnail, args=(cam_function, number_camera, l_ipcamera), daemon = True),
-                "capture_image": -1,
-                "capture_movie": -1
-            }
-            self.camera_list_component.append(cam_component)
-
-            
+            # thumbnail settings
             # column
             column = column + 1 if column < columns - 1 else 0
             # row
@@ -204,56 +155,134 @@ class RootWindow(BaseWindow):
             number_camera = number_camera + 1
             pos_row = pos_row + 2
 
+        # show on window 
+        self.f_camera.pack(side=tkinter.TOP, fill=tkinter.BOTH, padx=5, pady=2)
 
         # start threading
-        self.exit_thumb_thread = False
-        for x in  range(len(self.camera_list_component)):
-            #self.camera_list_component[x]["thread"].start()
-            self.camera_list_component[x]["thread_thumb"].start()
+        #for x in  range(len(self.camera_list_component)):
+        #    self.camera_list_component[x]["thread_update"].start()
+
+        
 
 
-        # show on window 
-        self.f_camera.pack(side=tk.TOP, fill=tk.BOTH, padx=5, pady=2)
+    # add component
+    def addcomponent(self, mainframe, number_camera):
 
+        # customization
+        text_onoff = "ON" if self.camera_list[number_camera]["status"] == 1 else "OFF"
+        color_onoff = "green" if self.camera_list[number_camera]["status"] == 1 else "red"
 
-    # capture image
-    def capture_image(self, index):
-        self.camera_list_component[index]["capture_image"] = 1
+        f_camera = tkinter.Frame(mainframe)
 
+        # camera canvas
+        canvas = tkinter.Canvas(f_camera, width=500, height=400)
+        canvas.pack()
+        # name camera
+        self.l_camera_text = tkinter.Label(f_camera, text="Camera {}".format(self.camera_list[number_camera]["ip"]))
+        self.l_camera_text.pack()
+        # on / off camera
+        self.btn_onoff = tkinter.Button(f_camera, text=text_onoff, bg=color_onoff, width=20, command=lambda k=number_camera: self.onoff(k))
+        self.btn_onoff.pack()
+        # show ptz form
+        self.btn_show_ptz = tkinter.Button(f_camera, text="PTZ", width=20, command=lambda k=self.camera_list[number_camera]: self.show_ptz_form(k))
+        self.btn_show_ptz.pack()
+        # show sd card form
+        self.btn_show_sdcard = tkinter.Button(f_camera, text="SDCARD", width=20, command=lambda k=number_camera: self.show_sdcard_form(k))
+        self.btn_show_sdcard.pack()
+        
+        f_camera.pack()
 
-    # capture movie
-    def capture_movie(self, index):
-        self.camera_list_component[index]["capture_movie"] = self.camera_list_component[index]["capture_movie"] * -1
-        camera = self.camera_list_component[index]["camera"]
+        # initialize camera
+        vid = Camera_PTZ(
+            self.camera_list[number_camera]["ip"], 
+            self.camera_list[number_camera]["port"], 
+            self.username, self.password, 
+            self.camera_list[number_camera]["status"])
 
-        if self.camera_list_component[index]["capture_movie"] == 1:
-            # initialize the result of movie
-            # We need to set resolutions.
-            # so, convert them from float to integer.
-            frame_width = int(camera.cam.get(3))
-            frame_height = int(camera.cam.get(4))
-            size = (frame_width, frame_height)
+        #thread_connect = threading.Thread(target=vid.connect, args=(), daemon = True)
+        #thread_connect.start()
+        
+        camera_component = {
+            "video": vid,
+            "thread_update": threading.Thread(target=self.update, args=(vid, number_camera, canvas), daemon = True),
+        }
+        self.camera_list_component.append(camera_component)
 
-            # Below VideoWriter object will create
-            # a frame of above defined The output 
-            # is stored in ' file.
-            date_time = datetime.now().strftime("%m%d%Y_%H%M%S")
-            self.result_movie = cv2.VideoWriter('data/export_' + date_time + '.avi', 
-                                    cv2.VideoWriter_fourcc(*'MJPG'),
-                                    10, size)
-            self.camera_list_component[index]["button_capture_movie"].configure(text="Click to stop")
+    
+    # onoff
+    def onoff(self, number_camera):
+        id = self.camera_list[number_camera]["id"]
+        row = self.camera.get(id)
+
+        if not row:
+            tkinter.messagebox.showerror(title=None, message="Failed to get data camera.")
         else:
-            self.camera_list_component[index]["button_capture_movie"].configure(text="Capture (MP4)")
-            messagebox.showinfo(title="Capture Success", message="Capture success, data will be stored at folder <data>")
+            row["status"] = row["status"] * -1
+            result = self.camera.update(row)
+            if not result:
+                tkinter.messagebox.showerror(title=None, message="Failed to update data camera.")
+
+            # customization
+            text_onoff = "ON" if row["status"] == 1 else "OFF"
+            color_onoff = "green" if row["status"] == 1 else "red"
+
+            for x in range(len(self.camera_list)):
+                if self.camera_list[x]["ip"] == row["ip"]:
+                    self.camera_list[x]["status"] = row["status"]
+                    self.camera_list_component[x]["button"].configure(text=text_onoff, bg=color_onoff)
+
+
+    # show window control camera
+    def show_ptz_form(self, camera_list):
+        # create custom form
+        win_ptz = ControlPTZWindow(self.win, camera_list["ip"], camera_list["ip"], camera_list["port"], camera_list["username"], camera_list["password"])
+        self.win.wait_window(win_ptz.top)
+
 
     # show sdcard access
-    def sdcard(self, index):
-        win_sdcard = SDCardWindow(self.win, "SD Card", self.camera_list[index])
+    def show_sdcard_form(self, number_camera):
+        win_sdcard = SDCardWindow(self.win, "SD CARD", self.camera_list[number_camera])
         self.win.wait_window(win_sdcard.top)
 
 
-    # show thumbnail (loop)
-    def show_thumbnail(self, camera, index_camera, camera_image):
+    # setting camera window
+    def show_setting_camera_window(self):
+        win_setting = SettingCameraWindow(self.win, "Setting Camera")
+        self.win.wait_window(win_setting.top)
+
+
+    # update camera real time
+    def update(self, camera, number_camera, canvas):
+
+        try:
+            while True:
+                status = self.camera_list[number_camera]["status"]
+
+                if status == 1:
+                    # camera not ready
+                    if camera.vid == None:
+                        print("camera not ready")
+
+                        # try to connect again
+                        camera.connect()
+                    # ready
+                    else:
+                        # Get a frame from the video source
+                        ret, frame = camera.get_frame()
+
+                        if ret:
+                            frame = cv2.resize(frame, (500, 400)) 
+                            photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
+                            canvas.create_image(0, 0, image = photo, anchor = tkinter.NW)
+
+                #time.sleep(self.delay)
+        except:
+            pass
+
+
+
+
+        '''
         try:
             while True:
                 
@@ -267,11 +296,17 @@ class RootWindow(BaseWindow):
                     capture_movie = self.camera_list_component[index_camera]["capture_movie"]
                     
                     # load default image
-                    load = Image.open("images/no-camera.png")
+                    load = tkinter.Image.open("images/no-camera.png")
+                    #load = ImageTk.PhotoImage(Image.open("images/no-camera.png"))
+
+
+                    
 
                     # check active or not
                     if camera.cam == None:
                         print("camera not ready")
+                        # reset  
+                        #camera_image.create_image(20, 20, anchor="nw", image=load) 
                         camera.connect()
                     elif camera.status == 1:
                         success, frame = camera.cam.read()
@@ -279,96 +314,24 @@ class RootWindow(BaseWindow):
                         if not success:
                             camera.connect()
                         else:
-                            # if capture image is active
-                            if capture_image == 1:
-                                date_time = datetime.now().strftime("%m%d%Y_%H%M%S")
-                                cv2.imwrite('data/export_' + date_time + '.jpg', frame)
-                                messagebox.showinfo(title="Capture Success", message="Capture success, data will be stored at folder <data>")
-                                self.camera_list_component[index_camera]["capture_image"] = -1
-                            
-
-                            # if capture movie is active
-                            if capture_movie == 1:
-                                # Write the frame into the file 
-                                self.result_movie.write(frame)
-
-
                             # show the image
                             frame = cv2.resize(frame, (250, 200))
-                            load = Image.fromarray(frame)
+                            load = tkinter.Image.fromarray(frame)
+                            #load = ImageTk.PhotoImage(image = Image.fromarray(frame))
+
+                            #camera_image.create_image(20, 20, anchor="nw", image=load) 
+
                     else:
                         pass
 
                     # refresh the image
-                    b = ImageTk.PhotoImage(image=load)
+                    b = tkinter.ImageTk.PhotoImage(image=load)
                     camera_image.configure(image=b)
                     camera_image.configure(text="")
                     camera_image._image_cache = b  # avoid garbage collection
+                    
 
                 #time.sleep(1)
         except:
             pass
-
-
-    # setting camera window
-    def show_setting_camera_window(self):
-        win_setting = SettingCameraWindow(self.win, "Setting Camera")
-        self.win.wait_window(win_setting.top)
-
-
-    # turn on / off camera
-    def onoff_callback(self, id):
-        row = self.camera.get(id)
-        if not row:
-            messagebox.showerror(title=None, message="Failed to get data camera.")
-        else:
-            row["status"] = row["status"] * -1
-            result = self.camera.update(row)
-            if not result:
-                messagebox.showerror(title=None, message="Failed to update data camera.")
-
-            text_onoff = "OFF"
-            color_onoff = "red"
-            if row["status"] == 1:
-                text_onoff = "ON"
-                color_onoff = "green"
-
-            for x in range(len(self.camera_list)):
-                if self.camera_list[x]["ip"] == row["ip"]:
-                    self.camera_list[x]["status"] = row["status"]
-                    self.camera_list_component[x]["button"].configure(text=text_onoff, bg=color_onoff)
-
-
-    # show window control camera
-    def show_callback(self, camera_list):
-
-        self.camera_pause = True
-
-        # creatte custom form
-        win_ptz = ControlPTZWindow(self.win, camera_list["ip"], camera_list["ip"], camera_list["port"], camera_list["username"], camera_list["password"])
-        self.win.wait_window(win_ptz.top)
-
-
-        # render with default form
-        '''
-        for x in range(len(self.camera_list)):
-            if self.camera_list[x]["ip"] == camera_list["ip"]:
-                self.camera_list_component[x]["camera"].render()
-                break
-        '''
-
-        self.camera_pause = False
-
-
-    # show window control camera (old)
-    def showold_callback(self, camera_list):
-
-        self.camera_pause = True
-
-        # render with default form
-        for x in range(len(self.camera_list)):
-            if self.camera_list[x]["ip"] == camera_list["ip"]:
-                self.camera_list_component[x]["camera"].render()
-                break
-
-        self.camera_pause = False
+            '''

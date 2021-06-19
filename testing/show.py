@@ -6,7 +6,7 @@ import time
 import requests
 from requests.auth import HTTPBasicAuth
 
-camera_url = 'rtsp://192.168.13.100/1'
+camera_url = 'rtsp://124.255.18.212/1'
 username = 'admin'
 password = '215802'
 exit_program = 0
