@@ -1,5 +1,6 @@
 # tkinter
 import tkinter
+from tkinter import messagebox
 import PIL.Image
 import PIL.ImageTk
 '''
@@ -91,12 +92,19 @@ class RootWindow(BaseWindow):
         preferencesmenu = tkinter.Menu(self.win, tearoff=0)
         preferencesmenu.add_command(label="Settings Camera", command=self.show_setting_camera_window)
         appmenu.add_cascade(label="Preferences", menu=preferencesmenu)
-        appmenu.add_separator()
-        appmenu.add_command(label="Refresh", command=self.refresh)
+        # appmenu.add_separator()
+        # appmenu.add_command(label="Refresh", command=self.refresh)
         appmenu.add_separator()
         appmenu.add_command(label="Close", command=self.close_window)
         menubar.add_cascade(label="App Camera", menu=appmenu)
         self.win.config(menu=menubar)
+
+
+        # button pause
+        self.btn_pause = tkinter.Button(self.win, text="Pause", bg="yellow", width=20, command=self.on_pause)
+        self.btn_pause.pack()
+        
+
 
         # show list camera
         self.initialize_list_camera()
@@ -122,8 +130,6 @@ class RootWindow(BaseWindow):
 
     # initialize / refresh list camera
     def initialize_list_camera(self):
-
-        self.delay = 15
 
         # get data camera
         self.camera_list = self.camera.list()
@@ -158,11 +164,12 @@ class RootWindow(BaseWindow):
         # show on window 
         self.f_camera.pack(side=tkinter.TOP, fill=tkinter.BOTH, padx=5, pady=2)
 
-        # start threading
-        #for x in  range(len(self.camera_list_component)):
-        #    self.camera_list_component[x]["thread_update"].start()
 
-        
+        self.delay = 0.15
+
+        # start threading
+        for x in  range(len(self.camera_list_component)):
+            self.camera_list_component[x]["thread_update"].start()
 
 
     # add component
@@ -175,7 +182,7 @@ class RootWindow(BaseWindow):
         f_camera = tkinter.Frame(mainframe)
 
         # camera canvas
-        canvas = tkinter.Canvas(f_camera, width=500, height=400)
+        canvas = tkinter.Canvas(f_camera, width=300, height=200)
         canvas.pack()
         # name camera
         self.l_camera_text = tkinter.Label(f_camera, text="Camera {}".format(self.camera_list[number_camera]["ip"]))
@@ -184,7 +191,7 @@ class RootWindow(BaseWindow):
         self.btn_onoff = tkinter.Button(f_camera, text=text_onoff, bg=color_onoff, width=20, command=lambda k=number_camera: self.onoff(k))
         self.btn_onoff.pack()
         # show ptz form
-        self.btn_show_ptz = tkinter.Button(f_camera, text="PTZ", width=20, command=lambda k=self.camera_list[number_camera]: self.show_ptz_form(k))
+        self.btn_show_ptz = tkinter.Button(f_camera, text="PTZ", width=20, command=lambda k=number_camera: self.show_ptz_form(k))
         self.btn_show_ptz.pack()
         # show sd card form
         self.btn_show_sdcard = tkinter.Button(f_camera, text="SDCARD", width=20, command=lambda k=number_camera: self.show_sdcard_form(k))
@@ -198,17 +205,21 @@ class RootWindow(BaseWindow):
             self.camera_list[number_camera]["port"], 
             self.username, self.password, 
             self.camera_list[number_camera]["status"])
-
-        #thread_connect = threading.Thread(target=vid.connect, args=(), daemon = True)
-        #thread_connect.start()
-        
         camera_component = {
             "video": vid,
-            "thread_update": threading.Thread(target=self.update, args=(vid, number_camera, canvas), daemon = True),
+            "canvas": canvas,
+            "thread_update": threading.Thread(target=self.update, args=(vid, canvas, number_camera), daemon = True),
         }
         self.camera_list_component.append(camera_component)
 
     
+    # pause
+    def on_pause(self):
+        self.camera_pause = not self.camera_pause
+        text_pause = "Play" if self.camera_pause else "Pause"
+        self.btn_pause.configure(text=text_pause)
+
+
     # onoff
     def onoff(self, number_camera):
         id = self.camera_list[number_camera]["id"]
@@ -233,9 +244,21 @@ class RootWindow(BaseWindow):
 
 
     # show window control camera
-    def show_ptz_form(self, camera_list):
+    def show_ptz_form(self, index):
         # create custom form
-        win_ptz = ControlPTZWindow(self.win, camera_list["ip"], camera_list["ip"], camera_list["port"], camera_list["username"], camera_list["password"])
+        ip = self.camera_list[index]["ip"]
+        port = self.camera_list[index]["port"]
+        username = self.camera_list[index]["username"]
+        password = self.camera_list[index]["password"]
+        video = self.camera_list_component[index]["video"]
+
+        self.camera_pause = True
+        text_pause = "Play" if self.camera_pause else "Pause"
+        self.btn_pause.configure(text=text_pause)
+
+        messagebox.showinfo(title="Info", message="After close PTZ Control, don't forget to click the button Play to start real time camera (Because it's still buggy after close not actually start the camera)")
+
+        win_ptz = ControlPTZWindow(self.win, ip, ip, port, username, password, video)
         self.win.wait_window(win_ptz.top)
 
 
@@ -252,86 +275,29 @@ class RootWindow(BaseWindow):
 
 
     # update camera real time
-    def update(self, camera, number_camera, canvas):
-
+    def update(self, vid, canvas, index):
         try:
             while True:
-                status = self.camera_list[number_camera]["status"]
-
-                if status == 1:
-                    # camera not ready
-                    if camera.vid == None:
-                        print("camera not ready")
-
-                        # try to connect again
-                        camera.connect()
-                    # ready
-                    else:
-                        # Get a frame from the video source
-                        ret, frame = camera.get_frame()
-
-                        if ret:
-                            frame = cv2.resize(frame, (500, 400)) 
-                            photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
-                            canvas.create_image(0, 0, image = photo, anchor = tkinter.NW)
-
-                #time.sleep(self.delay)
-        except:
-            pass
-
-
-
-
-        '''
-        try:
-            while True:
-                
-                if self.exit_thumb_thread == True:
-                    break
-
                 if not self.camera_pause:
+                    status = self.camera_list[index]["status"]
 
-                    camera.status = self.camera_list[index_camera]["status"]
-                    capture_image = self.camera_list_component[index_camera]["capture_image"]
-                    capture_movie = self.camera_list_component[index_camera]["capture_movie"]
-                    
-                    # load default image
-                    load = tkinter.Image.open("images/no-camera.png")
-                    #load = ImageTk.PhotoImage(Image.open("images/no-camera.png"))
+                    if status == 1:
+                        # camera not ready
+                        if vid.vid == None:
+                            print("camera not ready")
 
-
-                    
-
-                    # check active or not
-                    if camera.cam == None:
-                        print("camera not ready")
-                        # reset  
-                        #camera_image.create_image(20, 20, anchor="nw", image=load) 
-                        camera.connect()
-                    elif camera.status == 1:
-                        success, frame = camera.cam.read()
-
-                        if not success:
-                            camera.connect()
+                            # try to connect again
+                            vid.connect()
+                        # ready
                         else:
-                            # show the image
-                            frame = cv2.resize(frame, (250, 200))
-                            load = tkinter.Image.fromarray(frame)
-                            #load = ImageTk.PhotoImage(image = Image.fromarray(frame))
+                            # Get a frame from the video source
+                            ret, frame = vid.get_frame()
 
-                            #camera_image.create_image(20, 20, anchor="nw", image=load) 
-
-                    else:
-                        pass
-
-                    # refresh the image
-                    b = tkinter.ImageTk.PhotoImage(image=load)
-                    camera_image.configure(image=b)
-                    camera_image.configure(text="")
-                    camera_image._image_cache = b  # avoid garbage collection
-                    
-
-                #time.sleep(1)
+                            if ret:
+                                frame = cv2.resize(frame, (300, 200)) 
+                                photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
+                                canvas.create_image(0, 0, image = photo, anchor = tkinter.NW)
+                
+                time.sleep(self.delay)
         except:
             pass
-            '''

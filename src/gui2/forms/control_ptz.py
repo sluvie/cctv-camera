@@ -18,13 +18,14 @@ from ptz.camera import Camera_PTZ
 
 class ControlPTZWindow(BaseDialog):
 
-    def __init__(self, parent, title, ip, port, username, password):
+    def __init__(self, parent, title, ip, port, username, password, video):
         super().__init__(parent, title, window_width=640, window_height=400)
         
         self.ip = ip
         self.port = port
         self.username = username
         self.password = password
+        self.vid = video
 
         self.capture_movie = False
 
@@ -36,11 +37,13 @@ class ControlPTZWindow(BaseDialog):
     def add_component(self):
 
         # open video source (by default this will try to open the computer webcam)
-        self.vid = Camera_PTZ(self.ip, self.port, self.username, self.password)
-        try:
-            self.vid.connect()
-        except:
-            tkinter.messagebox.showinfo(title="Error", message="Unable to open video source")
+        #self.vid = Camera_PTZ(self.ip, self.port, self.username, self.password)
+        if self.vid.vid == None:
+            try:
+                self.vid.connect()
+            except:
+                tkinter.messagebox.showinfo(title="Error", message="Unable to open video source")
+        
 
         # main layout
         f_main = tkinter.Frame(self.top)
@@ -101,10 +104,23 @@ class ControlPTZWindow(BaseDialog):
 
     def movie(self):
         if self.capture_movie == False:
+            tkinter.messagebox.showinfo(title="Info", message="MP4 capture i'ts still bug (after saving the movie, must close all aplication so the movie can play at video player")
+
+
             self.filename = "data/frame-" + time.strftime("%d-%m-%Y-%H-%M-%S") + ".mp4"
-            self.capture_movie = True
+
+            # initialize the result of movie
+            # We need to set resolutions.
+            # so, convert them from float to integer.
+            frame_width = int(self.vid.vid.get(3))
+            frame_height = int(self.vid.vid.get(4))
+            size = (frame_width, frame_height)
+            fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+            self.result_movie = cv2.VideoWriter(self.filename, fourcc, 20, size)
 
             self.btn_movie.configure(text="Click to stop")
+
+            self.capture_movie = True
         else:
             self.capture_movie = False
 
@@ -117,20 +133,13 @@ class ControlPTZWindow(BaseDialog):
         ret, frame = self.vid.get_frame()
 
         if ret:
-            frame = cv2.resize(frame, (500, 400)) 
-            self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
+            frame2 = cv2.resize(frame, (500, 400)) 
+            self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame2))
             self.canvas.create_image(0, 0, image = self.photo, anchor = tkinter.NW)
 
             # toggle for save movie
             if self.capture_movie == True:
-                # initialize the result of movie
-                # We need to set resolutions.
-                # so, convert them from float to integer.
-                frame_width = int(self.vid.vid.get(3))
-                frame_height = int(self.vid.vid.get(4))
-                size = (frame_width, frame_height)
-                print(size)
-                self.result_movie = cv2.VideoWriter(self.filename, cv2.VideoWriter_fourcc(*'FMP4'), 10, size)
+                self.result_movie.write(frame)
 
         self.top.after(self.delay, self.update)
 
