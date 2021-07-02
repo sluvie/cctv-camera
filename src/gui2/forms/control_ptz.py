@@ -19,7 +19,7 @@ from ptz.camera import Camera_PTZ
 class ControlPTZWindow(BaseDialog):
 
     def __init__(self, parent, title, ip, port, username, password, video):
-        super().__init__(parent, title, window_width=640, window_height=400)
+        super().__init__(parent, title, window_width=800, window_height=600)
         
         self.ip = ip
         self.port = port
@@ -52,7 +52,7 @@ class ControlPTZWindow(BaseDialog):
         # Create a canvas that can fit the above video source size
         f_left = tkinter.Frame(f_main)
         self.canvas = tkinter.Canvas(
-            f_left, width=500, height=400)
+            f_left, width=600, height=500)
         self.canvas.pack()
         f_left.pack(side=tkinter.LEFT, fill=tkinter.BOTH, padx=5, pady=5)
 
@@ -81,6 +81,44 @@ class ControlPTZWindow(BaseDialog):
         self.btn_zoomin.pack(anchor=tkinter.CENTER, expand=True)
         self.btn_zoomout = tkinter.Button(f_right, text="Zoom Out", width=50, command=lambda: self.zoomout_callback())
         self.btn_zoomout.pack(anchor=tkinter.CENTER, expand=True)
+
+        # control with parameter (left)
+        l_left_degree = tkinter.Label(f_right, text="Left Degree:", anchor="w")
+        l_left_degree.pack(anchor=tkinter.CENTER, expand=True)
+        self.e_left_degree = tkinter.Entry(f_right)
+        self.e_left_degree.insert(tkinter.END, '30')
+        self.e_left_degree.pack(anchor=tkinter.CENTER, expand=True)
+        self.btn_left_degree = tkinter.Button(f_right, text="Left (Degree)", width=50, command=lambda: self.left_degree_callback())
+        self.btn_left_degree.pack(anchor=tkinter.CENTER, expand=True)
+
+        # control with parameter (right)
+        l_right_degree = tkinter.Label(f_right, text="Right Degree:", anchor="w")
+        l_right_degree.pack(anchor=tkinter.CENTER, expand=True)
+        self.e_right_degree = tkinter.Entry(f_right)
+        self.e_right_degree.insert(tkinter.END, '30')
+        self.e_right_degree.pack(anchor=tkinter.CENTER, expand=True)
+        self.btn_right_degree = tkinter.Button(f_right, text="Right (Degree)", width=50, command=lambda: self.right_degree_callback())
+        self.btn_right_degree.pack(anchor=tkinter.CENTER, expand=True)
+
+        # control with parameter (up)
+        l_up_degree = tkinter.Label(f_right, text="Up Degree:", anchor="w")
+        l_up_degree.pack(anchor=tkinter.CENTER, expand=True)
+        self.e_up_degree = tkinter.Entry(f_right)
+        self.e_up_degree.insert(tkinter.END, '30')
+        self.e_up_degree.pack(anchor=tkinter.CENTER, expand=True)
+        self.btn_up_degree = tkinter.Button(f_right, text="Up (Degree)", width=50, command=lambda: self.up_degree_callback())
+        self.btn_up_degree.pack(anchor=tkinter.CENTER, expand=True)
+
+        # control with parameter (down)
+        l_down_degree = tkinter.Label(f_right, text="Down Degree:", anchor="w")
+        l_down_degree.pack(anchor=tkinter.CENTER, expand=True)
+        self.e_down_degree = tkinter.Entry(f_right)
+        self.e_down_degree.insert(tkinter.END, '30')
+        self.e_down_degree.pack(anchor=tkinter.CENTER, expand=True)
+        self.btn_down_degree = tkinter.Button(f_right, text="Down (Degree)", width=50, command=lambda: self.down_degree_callback())
+        self.btn_down_degree.pack(anchor=tkinter.CENTER, expand=True)
+        
+
         f_right.pack(side=tkinter.RIGHT, fill=tkinter.BOTH, padx=5, pady=5)
 
         f_main.pack()
@@ -170,3 +208,23 @@ class ControlPTZWindow(BaseDialog):
 
     def zoomout_callback(self):
         self.vid.zoomout()
+
+
+    def left_degree_callback(self):
+        degree = self.e_left_degree.get()
+        self.vid.left_degree(degree)
+
+
+    def right_degree_callback(self):
+        degree = self.e_right_degree.get()
+        self.vid.right_degree(degree)
+
+
+    def up_degree_callback(self):
+        degree = self.e_up_degree.get()
+        self.vid.up_degree(degree)
+
+
+    def down_degree_callback(self):
+        degree = self.e_down_degree.get()
+        self.vid.down_degree(degree)

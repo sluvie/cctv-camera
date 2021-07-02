@@ -199,3 +199,36 @@ class Camera_PTZ:
         r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(self.username, self.password))
         time.sleep(0.05)
         self.stop()
+
+    def left_degree(self, degree):
+        URL = "http://{}:{}/web/cgi-bin/hi3510/ptzctrl.cgi".format(self.ipaddress, self.port)
+
+        PARAMS = {'-step': "0", "-act": "left", "-speed": str(degree)}
+        r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(self.username, self.password))
+        time.sleep(5)
+        self.stop()
+
+    def right_degree(self, degree):
+        URL = "http://{}:{}/web/cgi-bin/hi3510/ptzctrl.cgi".format(self.ipaddress, self.port)
+
+        PARAMS = {'-step': "0", "-act": "right", "-speed": str(degree)}
+        r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(self.username, self.password))
+        time.sleep(5)
+        self.stop()
+
+
+    def up_degree(self, degree):
+        URL = "http://{}:{}/web/cgi-bin/hi3510/ptzctrl.cgi".format(self.ipaddress, self.port)
+
+        PARAMS = {'-step': "0", "-act": "up", "-speed": str(degree)}
+        r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(self.username, self.password))
+        time.sleep(5)
+        self.stop()
+    
+    def down_degree(self, degree):
+        URL = "http://{}:{}/web/cgi-bin/hi3510/ptzctrl.cgi".format(self.ipaddress, self.port)
+
+        PARAMS = {'-step': "0", "-act": "down", "-speed": str(degree)}
+        r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(self.username, self.password))
+        time.sleep(5)
+        self.stop()
