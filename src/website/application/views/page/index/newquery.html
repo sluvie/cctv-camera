@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	{% include 'part/style.html' %}
+
+    <style>
+        textarea
+        {
+            width:100%;
+        }
+    </style>
+</head>
+
+<body>
+
+	<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+		<a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">SQL Tools</a>
+	</nav>
+
+
+	<div class="container-fluid">
+		<div class="row">
+            <main role="main" class="col-12 ml-sm-auto px-4">
+                <div
+					class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+					<h1 class="h2">{{ database_name }}</h1>
+				</div>
+
+                <textarea id="query_text" rows=20></textarea>
+        
+                <div class="row">
+                    <button id="btn_execute" class="btn btn-primary">Execute</button>
+                </div>
+
+                <hr />
+
+                <div id="result_area" class="row">
+                </div>
+            </main>
+        </div>
+	</div>
+
+
+	{% include 'part/script.html' %}
+</body>
+
+<script>
+    $("#btn_execute").click(function() {
+        var query = $("#query_text").val();
+        var myObject = {
+            "database": "{{ database_name }}",
+            "query": query
+        };
+        $.ajax({
+            type: "POST",
+            url: "/executequery",
+            data: JSON.stringify(myObject),
+            contentType: 'application/json',
+            dataType: 'json',
+            error: function() {
+                alert("error");
+            },
+            success: function(result) {
+                $( "#result_area" ).html( "<pre>" + result + "<pre>" );
+            }
+        });
+    })
+</script>
+
+</html>

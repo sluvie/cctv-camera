@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	{% include 'part/style.html' %}
+</head>
+
+<body>
+
+	<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+		<a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">SQL Tools</a>
+	</nav>
+
+
+	<div class="container-fluid">
+		<div class="row">
+
+			{% include 'part/aside.html' %}
+
+			<main role="main" class="col-9 ml-sm-auto col-lg-10 px-4">
+				<div
+					class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+					<h1 class="h2">{{ database_name }}</h1>
+					<a id="newqueryLink" class="btn btn-primary" href="/newquery?database={{ database_name }}" target="_blank">New Query</a>
+				</div>
+
+				<div class="row">
+					<div class="col-4">
+						<ul class="nav flex-column">
+							{% for row_table in list_table %}
+							<a href="/?database={{ database_name }}&table={{ row_table['table_name'] }}"><li class="nav-item">{{ row_table["table_name"] }}</li></a>
+							{% endfor %}
+						</ul>
+					</div>
+					<div class="col-8">
+						<span><b>{{ table_name }}</b></span>
+						<hr />
+						<a id="downloadLink" class="btn btn-primary" onclick="exportF(this)">Export to excel</a>
+						<hr />
+						<table width="100%" id="table">
+							<thead>
+								<tr>
+									<td>No.</td>
+									<td>Name</td>
+									<td>Type</td>
+									<td>Nullable</td>
+									<td>Length</td>
+									<td>Numeric Length</td>
+								</tr>
+							</thead>
+							<tbody>
+								{% for row_info in info_table %}
+								<tr>
+									<td>{{ row_info["ordinal_position"] }}</td>
+									<td>{{ row_info["column_name"] }}</td>
+									<td>{{ row_info["data_type"] }}</td>
+									<td>{{ row_info["is_nullable"] }}</td>
+									<td>{{ row_info["character_maximum_length"] }}</td>
+									<td>{{ row_info["numeric_precision"] }}</td>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</main>
+		</div>
+	</div>
+
+
+	{% include 'part/script.html' %}
+</body>
+
+<script>
+function exportF(elem) {
+	var table = document.getElementById("table");
+	var html = table.outerHTML;
+	var url = 'data:application/vnd.ms-excel,' + escape(html); // Set your html table into url 
+	elem.setAttribute("href", url);
+	elem.setAttribute("download", "export.xls"); // Choose the file name
+	return false;
+}
+</script>
+
+</html>

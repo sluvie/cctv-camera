@@ -1,0 +1,9 @@
+<nav class="col-2 sidebar">
+    <div class="sidebar-sticky">
+        <ul class="nav flex-column">
+            {% for row_db in list_db %}
+            <a href="/?database={{ row_db['name'] }}"><li class="nav-item">{{ row_db["name"] }}</li></a>
+            {% endfor %}
+        </ul>
+    </div>
+</nav>
