@@ -1,0 +1,112 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+    <h3 class="col-12 mt-5">Live Streaming {{ title }}</h3>
+    <div class="row">
+        <div class="col-9">
+            <!--
+            <img src="#" width="100%">
+            -->
+            <img id="video_feed" src="{{ url_for('ptz_video_feed') }}" width="100%">
+            
+        </div>
+
+        <div class="col-3">
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-dark" style="width:100%;" id="btn_up">Up</button>
+                </div>
+                <div class="col-4 mt-2">
+                    <button class="btn btn-dark" style="width:100%;" id="btn_left">Left</button>    
+                </div>
+                <div class="col-4 mt-2">
+                    <button class="btn btn-danger" style="width:100%;" id="btn_stop">Stop</button>    
+                </div>
+                <div class="col-4 mt-2">
+                    <button class="btn btn-dark" style="width:100%;" id="btn_right">Right</button>    
+                </div>
+                <div class="col-12 mt-2">
+                    <button class="btn btn-dark" style="width:100%;" id="btn_down">Down</button>    
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-6">
+                    <button class="btn btn-primary" style="width:100%;" id="btn_zoomin">Zoom In</button>
+                </div>
+                <div class="col-6">
+                    <button class="btn btn-primary" style="width:100%;" id="btn_zoomout">Zoom Out</button>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-danger" style="width:100%;" id="btn_preset">Home</button>    
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-12 text-center">
+                    <span>move based on degree:</span>
+                </div>                
+                <div class="col-12">
+                    <div class="row mt-2">
+                        <div class="input-group input-group-lg">
+                            <div class="col-md-6"><input class="form-control input-lg" type="text" value="30" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');" /></div>
+                            <div class="col-md-6 text-center"><button class="btn btn-dark" style="width:100%;">move left</button></div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="input-group input-group-lg">
+                            <div class="col-md-6"><input class="form-control input-lg" type="text" value="30" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');" /></div>
+                            <div class="col-md-6 text-center"><button class="btn btn-dark" style="width:100%;">move right</button></div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="input-group input-group-lg">
+                            <div class="col-md-6"><input class="form-control input-lg" type="text" value="30" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');" /></div>
+                            <div class="col-md-6 text-center"><button class="btn btn-dark" style="width:100%;">move up</button></div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="input-group input-group-lg">
+                            <div class="col-md-6"><input class="form-control input-lg" type="text" value="30" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');" /></div>
+                            <div class="col-md-6 text-center"><button class="btn btn-dark" style="width:100%;">move down</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-6 text-center">
+                    <button class="btn btn-primary" style="width:100%;" data-toggle="modal" data-target="#savepositionModal"><i class="fas fa-save"></i> カメラ位置保存</button> <!-- save -->
+                </div>
+                <div class="col-6 text-center">
+                    <button class="btn btn-success" style="width:100%;" data-toggle="modal" data-target="#loadpositionModal"><i class="fas fa-info"></i> カメラ位置呼出</button> <!-- show position list -->
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-6 text-center">
+                    <button class="btn btn-dark" style="width:100%;" id="btn_captureimage"><i class="fas fa-camera"></i> picture</button>
+                </div>
+                <div class="col-6">
+                    <button class="btn btn-dark" style="width:100%;"><i class="fas fa-video"></i> video</button>
+                </div>
+                <div class="col-12 mt-2">
+                    <button class="btn btn-dark" style="width:100%;"><i class="fas fa-sd-card"></i> sd card</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% include 'ptz/popup/saveposition.html' %}
+{% include 'ptz/popup/loadposition.html' %}
+
+{% block scriptcustom %}
+<!-- custom scripts -->
+<script src="/static/js/ptz/control.js"></script>
+{% endblock %}

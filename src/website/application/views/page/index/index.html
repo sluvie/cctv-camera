@@ -15,53 +15,25 @@
 	<div class="container-fluid">
 		<div class="row">
 
-			{% include 'part/aside.html' %}
-
-			<main role="main" class="col-9 ml-sm-auto col-lg-10 px-4">
+			<main role="main" class="col-12 ml-sm-auto px-4">
 				<div
 					class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-					<h1 class="h2">{{ database_name }}</h1>
-					<a id="newqueryLink" class="btn btn-primary" href="/newquery?database={{ database_name }}" target="_blank">New Query</a>
+					<h1 class="h2">{{ camera_ip }}</h1>
 				</div>
 
 				<div class="row">
-					<div class="col-4">
-						<ul class="nav flex-column">
-							{% for row_table in list_table %}
-							<a href="/?database={{ database_name }}&table={{ row_table['table_name'] }}"><li class="nav-item">{{ row_table["table_name"] }}</li></a>
-							{% endfor %}
-						</ul>
+					<button id="btn_execute" class="btn btn-primary">Execute</button>
+				</div>
+
+				<hr />
+
+				<div class="row">
+					<div id="img_container">
+						<canvas id="video" width="0" height="0"></canvas>						
 					</div>
-					<div class="col-8">
-						<span><b>{{ table_name }}</b></span>
-						<hr />
-						<a id="downloadLink" class="btn btn-primary" onclick="exportF(this)">Export to excel</a>
-						<hr />
-						<table width="100%" id="table">
-							<thead>
-								<tr>
-									<td>No.</td>
-									<td>Name</td>
-									<td>Type</td>
-									<td>Nullable</td>
-									<td>Length</td>
-									<td>Numeric Length</td>
-								</tr>
-							</thead>
-							<tbody>
-								{% for row_info in info_table %}
-								<tr>
-									<td>{{ row_info["ordinal_position"] }}</td>
-									<td>{{ row_info["column_name"] }}</td>
-									<td>{{ row_info["data_type"] }}</td>
-									<td>{{ row_info["is_nullable"] }}</td>
-									<td>{{ row_info["character_maximum_length"] }}</td>
-									<td>{{ row_info["numeric_precision"] }}</td>
-								</tr>
-								{% endfor %}
-							</tbody>
-						</table>
-					</div>
+					<button id="play">Play</button>
+					<span id="status"></span>
+
 				</div>
 			</main>
 		</div>
@@ -72,14 +44,81 @@
 </body>
 
 <script>
-function exportF(elem) {
-	var table = document.getElementById("table");
-	var html = table.outerHTML;
-	var url = 'data:application/vnd.ms-excel,' + escape(html); // Set your html table into url 
-	elem.setAttribute("href", url);
-	elem.setAttribute("download", "export.xls"); // Choose the file name
-	return false;
-}
+	function refresh_camera() {
+		var myObject = {};
+		$.ajax({
+			type: "POST",
+			url: "/refresh_camera",
+			data: JSON.stringify(myObject),
+			contentType: 'application/json',
+			dataType: 'json',
+			async: true,
+			error: function () {
+				console.log("error");
+			},
+			success: function (result) {
+
+				//base64string = 'data:image/png;base64,' + result.base64image;
+				$('#img_camera').remove();
+				$('img_container').append('<img id="img_camera" src=""/>');
+				$("#img_camera").width(640);
+				$("#img_camera").height(480);
+				$("#img_camera").attr('src', 'data:image/png;base64,' + result.base64image);
+
+			}
+		});
+	}
+
+	//var tid = setInterval(refresh_camera, 5000);
+
+
+	var VIDEO_URL = "http://192.168.13.100:12345";
+	var player = null;
+
+	window.onload = function () {
+		var video = document.getElementById("video");
+		var status = document.getElementById("status");
+
+		var playback = function (event) {
+			event.preventDefault();
+			if (player) {
+				player.stop();
+			}
+
+			console.log("Playing with libde265", libde265.de265_get_version());
+			player = new libde265.RawPlayer(video);
+			player.set_status_callback(function (msg, fps) {
+				player.disable_filters(true);
+				switch (msg) {
+					case "loading":
+						status.innerHTML = "Loading movie...";
+						break;
+					case "initializing":
+						status.innerHTML = "Initializing...";
+						break;
+					case "playing":
+						status.innerHTML = "Playing...";
+						break;
+					case "stopped":
+						status.innerHTML = "";
+						break;
+					case "fps":
+						status.innerHTML = Number(fps).toFixed(2) + " fps";
+						break;
+					default:
+						status.innerHTML = msg;
+				}
+			});
+			player.playback(VIDEO_URL);
+		};
+
+		var button = document.getElementById("play");
+		if (button.addEventListener) {
+			button.addEventListener("click", playback, false);
+		} else if (button.attachEvent) {
+			button.attachEvent('onclick', playback);
+		}
+	};
 </script>
 
 </html>
