@@ -21,3 +21,27 @@ def addcamera():
         "success": "1" if result else "0",
         "message": message
     }
+
+
+@app.route('/setting/deletecamera', methods = ['POST'])
+def deletecamera():
+    data = request.json
+    camera_m = Camera_m()
+    result, message = camera_m.delete(data["cameraid"])
+    return {
+        "success": "1" if result else "0",
+        "message": message
+    }
+
+
+@app.route("/setting/updatecameraonoff", methods = ['POST'])
+def updatecamera_onoff():
+    data = request.json
+    camera_m = Camera_m()
+    result, message = camera_m.update_onoff(data["cameraid"], data["onoff"], "suli")
+    return {
+        "success": "1" if result else "0",
+        "message": message
+    }
+
+

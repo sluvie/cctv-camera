@@ -1,0 +1,62 @@
+<!-- Modal -->
+<div class="modal fade" id="detailcameraModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Information <span id="label_detail_camera_ip"></span></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-2">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4">Port</div>
+                            <div class="col-8"><span id="label_detail_camera_port"></span></div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4">RTSP Port</div>
+                            <div class="col-8"><span id="label_detail_camera_rtsp_port"></span></div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4">Username</div>
+                            <div class="col-8"><span id="label_detail_camera_username"></span></div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4">Password</div>
+                            <div class="col-8"><span id="label_detail_camera_password"></span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr/>
+
+                <h2>Server Settings</h2>
+                <div class="m-3">
+                    <div class="row bg-dark text-white">
+                        <div class="col-3">ID</div>
+                        <div class="col-3">NAME</div>
+                        <div class="col-3">CREATED</div>
+                        <div class="col-3">STATUS</div>
+                    </div>
+                </div>
+                <div class="m-3 text-right">
+                    <button class="btn btn-primary">Deploy</button>
+                    <button class="btn btn-danger">Restart</button>
+                </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+                <button type="button" class="btn btn-danger" id="btn_deletecamera" data-cameraid="">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>

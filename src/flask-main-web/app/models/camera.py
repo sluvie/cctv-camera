@@ -14,7 +14,7 @@ class Camera_m:
     def list(self):
         try:
             cur = self.conn.cursor()
-            query = "select cameraid, ip, webport, rtspport, username, password, dockerid, dockername, dockerport from t_camera"
+            query = "select cameraid, ip, webport, rtspport, username, password, dockerid, dockername, dockerport, onoff from t_camera order by created"
             cur.execute(query)
             rows = cur.fetchall()
             if rows == None:
@@ -32,6 +32,7 @@ class Camera_m:
                         'dockerid': row[6],
                         'dockername': row[7],
                         'dockerport': row[8],
+                        'onoff': row[9]
                     }
                     result.append(row)
                 return result
@@ -42,7 +43,29 @@ class Camera_m:
     def insert(self, ip, port, rtspport, username, password, createby):
         try:
             cur = self.conn.cursor()
-            query = "insert into t_camera values (default, '{}', '{}', '{}', '{}', '{}', '', '', '', now(), '{}', null, null)".format(ip, port, rtspport, username, password, createby)
+            query = "insert into t_camera(cameraid, ip, webport, rtspport, username, password, createby) values (default, '{}', '{}', '{}', '{}', '{}', '{}')".format(ip, port, rtspport, username, password, createby)
+            cur.execute(query)
+            self.conn.commit()
+            return True, ""
+        except psycopg2.Error as e:
+            return False, str(e)
+
+
+    def delete(self, cameraid):
+        try:
+            cur = self.conn.cursor()
+            query = "delete from t_camera where cameraid='{}'".format(cameraid)
+            cur.execute(query)
+            self.conn.commit()
+            return True, ""
+        except psycopg2.Error as e:
+            return False, str(e)
+
+
+    def update_onoff(self, cameraid, onoff, updateby):
+        try:
+            cur = self.conn.cursor()
+            query = "update t_camera set onoff={}, updated=now(), updateby='{}' where cameraid='{}'".format(onoff, updateby, cameraid)
             cur.execute(query)
             self.conn.commit()
             return True, ""

@@ -4,7 +4,7 @@ UPLOADS_PATH = join(dirname(realpath(__file__)), 'static/uploads/')
 DATABASE_PATH = join(dirname(realpath(__file__)), 'database/')
 
 DATABASE_CONFIG = {
-    "host": "localhost",
+    "host": "katasaham.com",
     "port": 5432,
     "user": "camera",
     "password": "camera",

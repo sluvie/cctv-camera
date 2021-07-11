@@ -1,9 +1,11 @@
-{% extends 'layout.html' %}
+{% extends 'layout/main.html' %}
 
 {% block content %}
 <div class="container">
 
     <div class="mt-5">
+        <h1>Camera</h1>
+        <hr/>
         <div class="row text-right mb-5">
             <div class="col-12">
                 <button class="btn btn-dark" data-toggle="modal" data-target="#addcameraModal"><i class="fas fa-plus"></i></button>
@@ -17,6 +19,7 @@
                     <th>Ip</th>
                     <th>Port</th>
                     <th>RTSP Port</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -25,6 +28,7 @@
                     <td>{{ row.ip }}</td>
                     <td>{{ row.webport }}</td>
                     <td>{{ row.rtspport }}</td>
+                    <td class="text-center"><button class="btn btn-info btn_infocamera" data-toggle="modal" data-target="#detailcameraModal" data-camera="{{ row }}"><i class="fas fa-info-circle"></i></button></td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -34,6 +38,7 @@
 {% endblock %}
 
 {% include 'setting/popup/addcamera.html' %}
+{% include 'setting/popup/detailcamera.html' %}
 
 {% block scriptcustom %}
 <!-- custom scripts -->

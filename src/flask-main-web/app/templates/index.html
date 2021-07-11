@@ -1,110 +1,47 @@
-{% extends 'layout.html' %}
+{% extends 'layout/main.html' %}
 
 {% block content %}
 <div class="container">
     <div id="camera_list">
         <div class="row text-center">
-            <div class="col-3">
+            {% for row in cameras %}
+            <div class="col-4">
                 <div class="row p-1 m-2 bg-light">
                     <div class="col-12 mt-2">
-                        <span>camera 1</span>
+                        {% if row.onoff == 0 %}
+                        <img src="/static/img/no-cctv.png" width="100%" id="img_camera_{{ row.cameraid }}" />
+                        {% else %}
+                        <img src="http://localhost:8081/ptz/video_feed" width="100%" id="img_camera_{{ row.cameraid }}" />
+                        {% endif %}
                     </div>
                     <div class="col-12 mt-2">
-                        <img src="#" width="100%" />
-                    </div>
-                    <div class="col-12 mt-2">
-                        <span>192.168.13.100</span>
+                        <span>{{ row.ip }}</span>
                     </div>
                     <div class="col-12 mt-2">
                         <div class="row">
                             <div class="input-group input-group-lg">
-                                <div class="col-md-6">
-                                    <button class="btn btn-success" style="width:100%;">ON</button>    
+                                <div class="col">
+                                    {% if row.onoff == 0 %}
+                                    <button class="btn btn-success btn_onoff" style="width:100%;" data-camera="{{ row }}">オン</button> <!-- ON -->
+                                    {% else %}
+                                    <button class="btn btn-danger btn_onoff" style="width:100%;" data-camera="{{ row }}">オフ</button> <!-- OFF -->
+                                    {% endif %}
                                 </div>
-                                <div class="col-md-6">
-                                    <button class="btn btn-dark" style="width:100%;">View</button>
+                                <div class="col">
+                                    <button class="btn btn-dark" style="width:100%;"><i class="fas fa-eye"> コントロール</i></button> <!-- CONTROL -->
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>                
             </div>
-            <div class="col-3">
-                <div class="row p-2 m-2 bg-light">
-                    <div class="col-12 mt-2">
-                        <span>camera 2</span>
-                    </div>
-                    <div class="col-12 mt-2">
-                        <img src="#" width="100%" />
-                    </div>
-                    <div class="col-12 mt-2">
-                        <span>192.168.13.100</span>
-                    </div>
-                    <div class="col-12 mt-2">
-                        <div class="row">
-                            <div class="input-group input-group-lg">
-                                <div class="col-md-6">
-                                    <button class="btn btn-success" style="width:100%;">ON</button>    
-                                </div>
-                                <div class="col-md-6">
-                                    <button class="btn btn-dark" style="width:100%;">View</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>                
-            </div>
-            <div class="col-3">
-                <div class="row p-2 m-2 bg-light">
-                    <div class="col-12 mt-2">
-                        <span>camera 3</span>
-                    </div>
-                    <div class="col-12 mt-2">
-                        <img src="#" width="100%" />
-                    </div>
-                    <div class="col-12 mt-2">
-                        <span>192.168.13.100</span>
-                    </div>
-                    <div class="col-12 mt-2">
-                        <div class="row">
-                            <div class="input-group input-group-lg">
-                                <div class="col-md-6">
-                                    <button class="btn btn-success" style="width:100%;">ON</button>    
-                                </div>
-                                <div class="col-md-6">
-                                    <button class="btn btn-dark" style="width:100%;">View</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>                
-            </div>
-            <div class="col-3">
-                <div class="row p-2 m-2 bg-light">
-                    <div class="col-12 mt-2">
-                        <span>camera 4</span>
-                    </div>
-                    <div class="col-12 mt-2">
-                        <img src="#" width="100%" />
-                    </div>
-                    <div class="col-12 mt-2">
-                        <span>192.168.13.100</span>
-                    </div>
-                    <div class="col-12 mt-2">
-                        <div class="row">
-                            <div class="input-group input-group-lg">
-                                <div class="col-md-6">
-                                    <button class="btn btn-success" style="width:100%;">ON</button>    
-                                </div>
-                                <div class="col-md-6">
-                                    <button class="btn btn-dark" style="width:100%;">View</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>                
-            </div>
+            {% endfor %}
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scriptcustom %}
+<!-- custom scripts -->
+<script src="/static/js/app.js"></script>
 {% endblock %}

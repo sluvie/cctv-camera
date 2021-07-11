@@ -10,6 +10,11 @@ CREATE TABLE public.t_user
     password character varying NOT NULL,
     name character varying NOT NULL,
     isadmin integer NOT NULL DEFAULT 0,
+    created timestamp NOT NULL DEFAULT now(),
+    createby character varying,
+    updated timestamp,
+    updateby character varying,
+    deleteflag integer NOT NULL DEFAULT 0,
     PRIMARY KEY (userid)
 )
 
@@ -33,9 +38,10 @@ CREATE TABLE public.t_camera
     rtspport character varying NOT NULL,
     username character varying NOT NULL,
     password character varying NOT NULL,
-    dockerid character varying NOT NULL,
-    dockername character varying NOT NULL,
-    dockerport character varying NOT NULL,
+    onoff integer NOT NULL DEFAULT 0,
+    dockerid character varying NOT NULL DEFAULT '',
+    dockername character varying NOT NULL DEFAULT '',
+    dockerport character varying NOT NULL DEFAULT '',
     created timestamp NOT NULL DEFAULT now(),
     createby character varying,
     updated timestamp,

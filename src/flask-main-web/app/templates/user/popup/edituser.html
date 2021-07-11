@@ -1,0 +1,42 @@
+<!-- Modal -->
+<div class="modal fade" id="edituserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Edit User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label class="col-form-label">Username:</label>
+                        <label class="col-form-label"><span id="label_edit_username"></span></label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="col-form-label">Password:</label>
+                        <input type="text" class="form-control" id="edit_password">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nameuser" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control" id="edit_nameuser">
+                    </div>
+
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="edit_isadmin">
+                        <label class="form-check-label" for="edit_isadmin">Is Admin</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+                <button type="button" class="btn btn-primary" id="btn_edituser" data-userid="">保存</button>
+                <button type="button" class="btn btn-danger" id="btn_deleteuser" data-userid="">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
