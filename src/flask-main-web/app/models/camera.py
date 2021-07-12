@@ -51,6 +51,17 @@ class Camera_m:
             return False, str(e)
 
 
+    def update(self, cameraid, ip, port, rtspport, username, password, updateby):
+        try:
+            cur = self.conn.cursor()
+            query = "update t_camera set ip='{}', webport='{}', rtspport='{}', username='{}', password='{}', updated=now(), updateby='{}' where cameraid='{}'".format(ip, port, rtspport, username, password, updateby, cameraid)
+            cur.execute(query)
+            self.conn.commit()
+            return True, ""
+        except psycopg2.Error as e:
+            return False, str(e)
+
+
     def delete(self, cameraid):
         try:
             cur = self.conn.cursor()

@@ -1,11 +1,19 @@
-from flask import render_template, request
+from flask import (
+    render_template, 
+    g,
+    request,
+    redirect,
+    url_for)
 from app import app
 
 # database
 from app.models.user import User_m
 
 @app.route('/user/user', methods = ['GET'])
-def settinguser():
+def browseuser():
+    # auth page
+    if not g.user:
+            return redirect(url_for('login'))
 
     user_m = User_m()
     users = user_m.list()
@@ -14,6 +22,10 @@ def settinguser():
 
 @app.route('/user/adduser', methods = ['POST'])
 def adduser():
+    # auth page
+    if not g.user:
+            return redirect(url_for('login'))
+
     data = request.json
     user_m = User_m()
     result, message = user_m.insert(data["username"], data["password"], data["name"], data["isadmin"], "suli")
@@ -25,6 +37,10 @@ def adduser():
 
 @app.route('/user/edituser', methods = ['POST'])
 def edituser():
+    # auth page
+    if not g.user:
+            return redirect(url_for('login'))
+
     data = request.json
     user_m = User_m()
     result, message = user_m.update(data["userid"], data["password"], data["name"], data["isadmin"], "suli")
@@ -36,6 +52,10 @@ def edituser():
 
 @app.route('/user/deleteuser', methods = ['POST'])
 def deleteuser():
+    # auth page
+    if not g.user:
+            return redirect(url_for('login'))
+
     data = request.json
     user_m = User_m()
     result, message = user_m.delete(data["userid"], "suli")

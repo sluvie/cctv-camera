@@ -34,6 +34,27 @@ class User_m:
         except psycopg2.Error as e:
             return None
 
+    
+    def get(self, username, deleteflag=0):
+        try:
+            cur = self.conn.cursor()
+            query = "select userid, username, password, name, isadmin from t_user where username='{}' and deleteflag={} order by created".format(username, deleteflag)
+            cur.execute(query)
+            row = cur.fetchone()
+            if row == None:
+                return None
+            else:
+                result = {
+                        'userid': row[0],
+                        'username': row[1],
+                        'password': row[2],
+                        'name': row[3],
+                        'isadmin': row[4]
+                    }
+                return result
+        except psycopg2.Error as e:
+            return None
+
 
     def insert(self, username, password, name, isadmin, createby):
         try:

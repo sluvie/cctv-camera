@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="/">CMS</a>
+    <a class="navbar-brand" href="{{ url_for('index') }}">CMS</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -18,9 +18,9 @@
                     Settings
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="/setting/camera">Camera</a>
+                    <a class="dropdown-item" href="{{ url_for('settingcamera') }}">Camera</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="/user/user">User</a>
+                    <a class="dropdown-item" href="{{ url_for('browseuser') }}">User</a>
                 </div>
             </li>
             <!--
@@ -30,7 +30,7 @@
             -->
         </ul>
         <form class="form-inline my-2 my-lg-0">
-            <button class="btn btn-danger my-2 my-sm-0" type="submit">Logout</button>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger my-2 my-sm-0" type="submit">Logout</a>
         </form>
     </div>
 </nav>

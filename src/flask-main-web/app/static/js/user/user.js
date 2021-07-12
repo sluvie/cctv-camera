@@ -1,10 +1,15 @@
 $(document).ready(function () {
     console.log("Ready.");
-    $('#tbl-main').DataTable();
+    $('#tbl-main').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    });
 })
 
 
-$("#btn_saveuser").click(function() {
+$("#btn_saveuser").click(function () {
     console.log("save user.");
 
     var data = {
@@ -21,24 +26,25 @@ $("#btn_saveuser").click(function() {
         contentType: 'application/json',
         dataType: 'json',
         error: function () {
-            alert("error");
+            Swal.fire("Error", '', 'error');
         },
         success: function (data) {
             if (data.success) {
                 if (data.success == "1") {
+                    Swal.fire('Inserted!', '', 'success');
                     location.reload();
                 } else {
-                    alert(data.message);
+                    Swal.fire(data.message, '', 'error');
                 }
             } else {
-                alert("failed to add user")
+                Swal.fire("Failed to add user", '', 'error');
             }
         }
     });
 });
 
 
-$("#btn_edituser").click(function() {
+$("#btn_edituser").click(function () {
     console.log("edit user.");
 
     var data = {
@@ -55,56 +61,73 @@ $("#btn_edituser").click(function() {
         contentType: 'application/json',
         dataType: 'json',
         error: function () {
-            alert("error");
+            Swal.fire("Error", '', 'error');
         },
         success: function (data) {
             if (data.success) {
                 if (data.success == "1") {
+                    Swal.fire('Updated!', '', 'success');
                     location.reload();
                 } else {
-                    alert(data.message);
+                    Swal.fire(data.message, '', 'error');
                 }
             } else {
-                alert("failed to edit user")
+                Swal.fire("Failed to edit user", '', 'error');
             }
         }
     });
 });
 
 
-$("#btn_deleteuser").click(function() {
+$("#btn_deleteuser").click(function () {
     console.log("delete user.");
 
     var data = {
         "userid": $(this).data("userid")
     };
 
-    $.ajax({
-        type: "POST",
-        url: url_delete_user,
-        data: JSON.stringify(data),
-        contentType: 'application/json',
-        dataType: 'json',
-        error: function () {
-            alert("error");
-        },
-        success: function (data) {
-            if (data.success) {
-                if (data.success == "1") {
-                    location.reload();
-                } else {
-                    alert(data.message);
+    Swal.fire({
+        title: 'Do you want to delete the data?',
+        icon: 'warning',
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: `Delete`,
+        denyButtonText: `Don't delete`,
+        cancelButtonText: '閉じる',
+    }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+            $.ajax({
+                type: "POST",
+                url: url_delete_user,
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                dataType: 'json',
+                error: function () {
+                    Swal.fire("Error", '', 'error');
+                },
+                success: function (data) {
+                    if (data.success) {
+                        if (data.success == "1") {
+                            Swal.fire('Deleted!', '', 'success');
+                            location.reload();
+                        } else {
+                            Swal.fire(data.message, '', 'error');
+                        }
+                    } else {
+                        Swal.fire('Failed to delete user', '', 'info');
+                    }
                 }
-            } else {
-                alert("failed to edit user")
-            }
+            });
+        } else if (result.isDenied) {
+            Swal.fire('Data are not deleted', '', 'info');
         }
     });
 });
 
 
 
-$(".btn_infouser").click(function() {
+$(".btn_infouser").click(function () {
     console.log("info user.")
 
     user_str = $(this).data("user");
