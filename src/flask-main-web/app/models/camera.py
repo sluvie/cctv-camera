@@ -40,6 +40,32 @@ class Camera_m:
             return None
 
 
+    def readone(self, cameraid):
+        try:
+            cur = self.conn.cursor()
+            query = "select cameraid, ip, webport, rtspport, username, password, dockerid, dockername, dockerport, onoff from t_camera where cameraid='{}' order by created".format(cameraid)
+            cur.execute(query)
+            row = cur.fetchone()
+            if row == None:
+                return None, "Data not found"
+            else:
+                result = {
+                        'cameraid': row[0],
+                        'ip': row[1],
+                        'webport': row[2],
+                        'rtspport': row[3],
+                        'username': row[4],
+                        'password': row[5],
+                        'dockerid': row[6],
+                        'dockername': row[7],
+                        'dockerport': row[8],
+                        'onoff': row[9]
+                    }
+                return result, ""
+        except psycopg2.Error as e:
+            return None, str(e)
+
+
     def insert(self, ip, port, rtspport, username, password, createby):
         try:
             cur = self.conn.cursor()

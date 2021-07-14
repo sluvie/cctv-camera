@@ -20,6 +20,23 @@ def browseuser():
     return render_template('/user/user.html', title="CMS - User", description="", users=users)
 
 
+@app.route('/user/readone', methods = ['POST'])
+def user_readone():
+        # auth page
+        if not g.user:
+                return redirect(url_for('login'))
+        
+        user = g.user
+        data = request.json
+        user_m = User_m()
+        result, message = user_m.readone(data["userid"])
+        return {
+                "success": "1" if result else "0",
+                "message": message,
+                "data": result
+        }
+
+
 @app.route('/user/adduser', methods = ['POST'])
 def adduser():
     # auth page

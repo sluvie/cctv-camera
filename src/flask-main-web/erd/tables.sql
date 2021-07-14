@@ -56,3 +56,52 @@ ALTER TABLE public.t_camera
 
 COMMENT ON TABLE public.t_camera
     IS 'list of registered camera';
+
+
+-- CAMERA POSITION
+
+CREATE TABLE public.t_camera_position
+(
+    camerapositionid uuid NOT NULL DEFAULT gen_random_uuid(),
+    positionnumber integer NOT NULL DEFAULT 0,
+    positionname  character varying NOT NULL DEFAULT '',
+    cameraid uuid NOT NULL,
+    created timestamp NOT NULL DEFAULT now(),
+    createby character varying,
+    PRIMARY KEY (camerapositionid),
+    CONSTRAINT fk_camera_position
+        FOREIGN KEY(cameraid)
+            REFERENCES t_camera(cameraid)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public.t_camera_position
+    OWNER to camera;
+
+COMMENT ON TABLE public.t_camera_position
+    IS 'list of camera position';
+
+
+-- CAMERA POSITION PICTURE
+
+CREATE TABLE public.t_camera_snapshot
+(
+    camerasnapshotid uuid NOT NULL DEFAULT gen_random_uuid(),
+    camerabase64 character varying NOT NULL,
+    cameraid uuid NOT NULL,
+    created timestamp NOT NULL DEFAULT now(),
+    createby character varying,
+    PRIMARY KEY (camerasnapshotid),
+    CONSTRAINT fk_camera_snapshot
+        FOREIGN KEY(cameraid)
+            REFERENCES t_camera(cameraid)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public.t_camera_snapshot
+    OWNER to camera;
+
+COMMENT ON TABLE public.t_camera_snapshot
+    IS 'list of camera snapshot';

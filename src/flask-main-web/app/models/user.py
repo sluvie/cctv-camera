@@ -34,6 +34,27 @@ class User_m:
         except psycopg2.Error as e:
             return None
 
+
+    def readone(self, userid):
+        try:
+            cur = self.conn.cursor()
+            query = "select userid, username, password, name, isadmin from t_user where userid='{}' order by created".format(userid)
+            cur.execute(query)
+            row = cur.fetchone()
+            if row == None:
+                return None, "Data not found"
+            else:
+                result = {
+                        'userid': row[0],
+                        'username': row[1],
+                        'password': row[2],
+                        'name': row[3],
+                        'isadmin': row[4]
+                    }
+                return result, ""
+        except psycopg2.Error as e:
+            return None, str(e)
+
     
     def get(self, username, deleteflag=0):
         try:

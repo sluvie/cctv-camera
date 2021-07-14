@@ -30,8 +30,8 @@
                     <td>{{ row.webport }}</td>
                     <td>{{ row.rtspport }}</td>
                     <td class="text-center">
-                        <button class="btn btn-warning btn_infoeditcamera" data-toggle="modal" data-target="#editcameraModal" data-camera="{{ row }}"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-info btn_infocamera" data-toggle="modal" data-target="#detailcameraModal" data-camera="{{ row }}"><i class="fas fa-info-circle"></i></button>
+                        <button class="btn btn-warning btn_infoeditcamera" data-cameraid="{{ row.cameraid }}"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-info btn_infocamera" data-cameraid="{{ row.cameraid }}"><i class="fas fa-info-circle"></i></button>
                     </td>
                 </tr>
                 {% endfor %}

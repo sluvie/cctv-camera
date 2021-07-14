@@ -20,6 +20,7 @@ $(".btn_onoff").click(function() {
         "onoff": camera.onoff
     };
 
+    $.LoadingOverlay("show");
     $.ajax({
         type: "POST",
         url: url_update_camera_onoff,
@@ -53,6 +54,7 @@ $(".btn_onoff").click(function() {
             } else {
                 alert("failed to turn on / off camera")
             }
+            $.LoadingOverlay("hide");
         }
     });
 });

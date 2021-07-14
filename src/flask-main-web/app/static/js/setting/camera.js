@@ -20,6 +20,7 @@ $("#btn_savecamera").click(function() {
         "password": $("#password").val()
     };
 
+    $.LoadingOverlay("show");
     $.ajax({
         type: "POST",
         url: url_add_camera,
@@ -40,6 +41,7 @@ $("#btn_savecamera").click(function() {
             } else {
                 Swal.fire('Failed to add camera', '', 'error')
             }
+            $.LoadingOverlay("hide");
         }
     });
 });
@@ -57,6 +59,7 @@ $("#btn_editcamera").click(function () {
         "password": $("#edit_password").val()
     };
 
+    $.LoadingOverlay("show");
     $.ajax({
         type: "POST",
         url: url_edit_camera,
@@ -77,6 +80,7 @@ $("#btn_editcamera").click(function () {
             } else {
                 Swal.fire("Failed to edit camera", '', 'error');
             }
+            $.LoadingOverlay("hide");
         }
     });
 });
@@ -100,6 +104,7 @@ $("#btn_deletecamera").click(function() {
     }).then((result) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
+            $.LoadingOverlay("show");
             $.ajax({
                 type: "POST",
                 url: url_delete_camera,
@@ -120,6 +125,7 @@ $("#btn_deletecamera").click(function() {
                     } else {
                         alert("failed to delete camera")
                     }
+                    $.LoadingOverlay("hide");
                 }
             });
         } else if (result.isDenied) {
@@ -132,35 +138,81 @@ $("#btn_deletecamera").click(function() {
 $(".btn_infoeditcamera").click(function () {
     console.log("info edit camera.")
 
-    camera_str = $(this).data("camera");
-    camera_str = camera_str.replace(/\'/g, '"');
-    // parse to json
-    camera = JSON.parse(camera_str);
-
-    // fill the data
-    $("#edit_ip").val(camera.ip);
-    $("#edit_port").val(camera.webport);
-    $("#edit_rtsp-port").val(camera.rtspport);
-    $("#edit_username").val(camera.username);
-    $("#edit_password").val(camera.password);
-    $("#btn_editcamera").data("cameraid", camera.cameraid);
-    $("#btn_deletecamera").data("cameraid", camera.cameraid);
+    var cameraid = $(this).data("cameraid");
+    var data = {
+        "cameraid": cameraid,
+    };
+    $.LoadingOverlay("show");
+    $.ajax({
+        type: "POST",
+        url: url_readone_camera,
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        dataType: 'json',
+        error: function () {
+            Swal.fire("Error", '', 'error');
+        },
+        success: function (data) {
+            if (data.success) {
+                if (data.success == "1") {
+                    // fill the data
+                    var camera = data.data;
+                    $("#edit_ip").val(camera.ip);
+                    $("#edit_port").val(camera.webport);
+                    $("#edit_rtsp-port").val(camera.rtspport);
+                    $("#edit_username").val(camera.username);
+                    $("#edit_password").val(camera.password);
+                    $("#btn_editcamera").data("cameraid", camera.cameraid);
+                    $("#btn_deletecamera").data("cameraid", camera.cameraid);
+                    $("#editcameraModal").modal('show');
+                } else {
+                    Swal.fire(data.message, '', 'error');
+                }
+            } else {
+                Swal.fire("Failed to get data project", '', 'error');
+            }
+            $.LoadingOverlay("hide");
+        }
+    });
 });
 
 
 $(".btn_infocamera").click(function() {
     console.log("info camera.")
 
-    camera_str = $(this).data("camera");
-    camera_str = camera_str.replace(/\'/g, '"');
-    // parse to json
-    camera = JSON.parse(camera_str);
-
-    // fill the data
-    $("#label_detail_camera_ip").text(camera.ip);
-    $("#label_detail_camera_port").text(camera.webport);
-    $("#label_detail_camera_rtsp_port").text(camera.rtspport);
-    $("#label_detail_camera_username").text(camera.username);
-    $("#label_detail_camera_password").text(camera.password);
-    $("#btn_deletecamera").data("cameraid", camera.cameraid);
+    var cameraid = $(this).data("cameraid");
+    var data = {
+        "cameraid": cameraid,
+    };
+    $.LoadingOverlay("show");
+    $.ajax({
+        type: "POST",
+        url: url_readone_camera,
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        dataType: 'json',
+        error: function () {
+            Swal.fire("Error", '', 'error');
+        },
+        success: function (data) {
+            if (data.success) {
+                if (data.success == "1") {
+                    // fill the data
+                    var camera = data.data;
+                    $("#label_detail_camera_ip").text(camera.ip);
+                    $("#label_detail_camera_port").text(camera.webport);
+                    $("#label_detail_camera_rtsp_port").text(camera.rtspport);
+                    $("#label_detail_camera_username").text(camera.username);
+                    $("#label_detail_camera_password").text(camera.password);
+                    $("#btn_deletecamera").data("cameraid", camera.cameraid);
+                    $("#detailcameraModal").modal('show');
+                } else {
+                    Swal.fire(data.message, '', 'error');
+                }
+            } else {
+                Swal.fire("Failed to get data project", '', 'error');
+            }
+            $.LoadingOverlay("hide");
+        }
+    });
 });

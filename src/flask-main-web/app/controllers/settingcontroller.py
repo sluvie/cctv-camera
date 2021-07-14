@@ -20,6 +20,23 @@ def settingcamera():
     return render_template('/setting/camera.html', title="CMS - Setting Camera", description="", cameras=cameras)
 
 
+@app.route('/setting/readone', methods = ['POST'])
+def camera_readone():
+        # auth page
+        if not g.user:
+                return redirect(url_for('login'))
+        
+        user = g.user
+        data = request.json
+        camera_m = Camera_m()
+        result, message = camera_m.readone(data["cameraid"])
+        return {
+                "success": "1" if result else "0",
+                "message": message,
+                "data": result
+        }
+
+
 @app.route('/setting/addcamera', methods = ['POST'])
 def addcamera():
     # auth page

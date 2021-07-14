@@ -1,34 +1,52 @@
-from flask import render_template, Response
+from flask import (
+    render_template, 
+    g,
+    request,
+    Response,
+    redirect,
+    url_for)
 from app import app
-#from app.models.user import User ## import kelas User dari model
 
 import cv2
+import base64
 import time
 import requests
 from requests.auth import HTTPBasicAuth
 import json
 import threading
+import configparser
 
 # database
-from app.models.position import PositionDB
+from app.models.cameraposition import CameraPosition_m
+from app.models.camerasnapshot import CameraSnapshot_m
 
+# config
+config = configparser.ConfigParser()
+config.readfp(open(r'app/config.ini'))
 
-ipaddress = "192.168.13.100"
-port = "12345"
-username = "admin"
-password = "215802"
-video_source = "rtsp://{}/1".format("192.168.13.100")
+ipaddress = config.get('CAMERA', 'ipaddress')
+port = config.get('CAMERA', 'port')
+username = config.get('CAMERA', 'username')
+password = config.get('CAMERA', 'password')
+cameraid = config.get('CAMERA', 'cameraid')
+
+video_source = "rtsp://{}/1".format(ipaddress)
 camera = cv2.VideoCapture(video_source)
+
+# trial camera laptop
 #camera = cv2.VideoCapture(0)
 
 # tools camera
 outputFrame = None
 lock = threading.Lock()
+# tools snapshot
+dosnapshot = False
+snapshot_m = CameraSnapshot_m()
 
 
 # CAMERA FUNCTION
 def gen_frames(width=800, height=600):
-    global outputFrame, lock, camera
+    global outputFrame, lock, camera, dosnapshot, cameraid
 
     while True:
         # wait until the lock is required
@@ -43,6 +61,16 @@ def gen_frames(width=800, height=600):
             # the iteration of the loop
             if outputFrame is None:
                 continue
+
+            # do snapshot
+            if dosnapshot:
+                print("=========================================> SNAPSHOT")
+                # save to 
+                (flag, encodedImage) = cv2.imencode('.jpg', outputFrame)
+                jpg_as_text = base64.b64encode(encodedImage)
+                result, message = snapshot_m.insert(jpg_as_text, cameraid, "suli")
+                print(message)
+                dosnapshot = False
 
             # encode the frame in JPEG format
             dim = (width, height)
@@ -66,62 +94,70 @@ def ptz_video_feed():
 
 @app.route('/ptz/control', methods = ['GET'])
 def ptz_control():
+    global ipaddress, port, username, password
+    
     return render_template(
         'ptz/control.html', 
         title=ipaddress,
+        ip=ipaddress,
+        port=port,
         description="")
 
 # send ptz turn left
-@app.route('/ptz/left')
-def ptz_left():
+@app.route('/ptz/left/<speed>')
+def ptz_left(speed: str):
+    global ipaddress, port, username, password
+    
     URL = "http://{}:{}/web/cgi-bin/hi3510/ptzctrl.cgi".format(ipaddress, port)
-    PARAMS = {'-step': "0", "-act": "left", "-speed": "2"}
+    PARAMS = {'-step': "0", "-act": "left", "-speed": speed}
     r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
     return { "success": 1 }
 
 # send ptz turn right
-@app.route('/ptz/right')
-def ptz_right():
+@app.route('/ptz/right/<speed>')
+def ptz_right(speed: str):
+    global ipaddress, port, username, password
+    
     URL = "http://{}:{}/web/cgi-bin/hi3510/ptzctrl.cgi".format(ipaddress, port)
-    PARAMS = {'-step': "0", "-act": "right", "-speed": "2"}
+    PARAMS = {'-step': "0", "-act": "right", "-speed": speed}
     r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
     return { "success": 1 }
 
 # send ptz turn up
 @app.route('/ptz/up')
-def ptz_up():
+def ptz_up(speed: str):
+    global ipaddress, port, username, password
+    
     URL = "http://{}:{}/web/cgi-bin/hi3510/ptzctrl.cgi".format(ipaddress, port)
-    PARAMS = {'-step': "0", "-act": "up", "-speed": "2"}
+    PARAMS = {'-step': "0", "-act": "up", "-speed": speed}
     r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
     return { "success": 1 }
 
 # send ptz turn down
-@app.route('/ptz/down')
-def ptz_down():
+@app.route('/ptz/down/<speed>')
+def ptz_down(speed: str):
+    global ipaddress, port, username, password
+    
     URL = "http://{}:{}/web/cgi-bin/hi3510/ptzctrl.cgi".format(ipaddress, port)
-    PARAMS = {'-step': "0", "-act": "down", "-speed": "2"}
+    PARAMS = {'-step': "0", "-act": "down", "-speed": speed}
     r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
     return { "success": 1 }
 
 # send ptz stop
 @app.route('/ptz/stop')
 def ptz_stop():
+    global ipaddress, port, username, password
+    
     URL = "http://{}:{}/web/cgi-bin/hi3510/ptzctrl.cgi".format(ipaddress, port)
     PARAMS = {'-step': "0", "-act": "stop", "-speed": "2"}
-    r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
-    return { "success": 1 }
-
-# send ptz preset
-@app.route('/ptz/preset')
-def ptz_preset():
-    URL = "http://{}:{}/web/cgi-bin/hi3510/param.cgi".format(ipaddress, port)
-    PARAMS = {'cmd': "preset", "-act": "goto", "-status":1, "-number": "0"}
     r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
     return { "success": 1 }
 
 # send ptz zoomin
 @app.route('/ptz/zoomin')
 def ptz_zoomin():
+    global ipaddress, port, username, password
+    
     URL = "http://{}:{}/web/cgi-bin/hi3510/ptzctrl.cgi".format(ipaddress, port)
     PARAMS = {'-step': "0", "-act": "zoomin", "-speed": "1"}
     r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
@@ -134,6 +170,8 @@ def ptz_zoomin():
 # send ptz zoomout
 @app.route('/ptz/zoomout')
 def ptz_zoomout():
+    global ipaddress, port, username, password
+    
     URL = "http://{}:{}/web/cgi-bin/hi3510/ptzctrl.cgi".format(ipaddress, port)
     PARAMS = {'-step': "0", "-act": "zoomout", "-speed": "1"}
     r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
@@ -143,25 +181,96 @@ def ptz_zoomout():
     r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
     return { "success": 1 }
 
-# capture image
-@app.route('/ptz/captureimage')
-def ptz_capture_image():
-    return {
-        "data": None
-    }
+
+
+
+# send ptz goto preset
+@app.route('/ptz/gotopreset/<number>')
+def ptz_gotopreset(number: str):
+    global ipaddress, port, username, password
+    
+    URL = "http://{}:{}/web/cgi-bin/hi3510/param.cgi".format(ipaddress, port)
+    PARAMS = {'cmd': "preset", "-act": "goto", "-status":1, "-number": number}
+    r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
+    return { "success": 1 }
+
+
+# send ptz set preset
+@app.route('/ptz/setpreset/<number>')
+def ptz_setpreset(number: str):
+    global ipaddress, port, username, password
+    
+    URL = "http://{}:{}/web/cgi-bin/hi3510/param.cgi".format(ipaddress, port)
+    PARAMS = {'cmd': "preset", "-act": "set", "-status":1, "-number": number}
+    r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
+    return { "success": 1 }
+
+
+# send ptz remove preset
+@app.route('/ptz/removepreset/<number>')
+def ptz_removepreset(number: str):
+    global ipaddress, port, username, password
+    
+    URL = "http://{}:{}/web/cgi-bin/hi3510/param.cgi".format(ipaddress, port)
+    PARAMS = {'cmd': "preset", "-act": "set", "-status":0, "-number": number}
+    r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
+    return { "success": 1 }
+
+
 
 
 # save position
-@app.route('/ptz/saveposition/{name}')
-def save_position(name: str):
-    position_db = PositionDB()
-    # add
-    newid = position_db.getmaxid()
-    row = {
-        'id': newid + 1, 
-        'name': name
-    }
-    position_db.insert(row)
+@app.route('/ptz/saveposition', methods = ['POST'])
+def save_position():
+    global cameraid
+    
+    data = request.json
+    cameraposition_m = CameraPosition_m()
+    result, positionnumber, message = cameraposition_m.insert(data["positionname"], cameraid, "suli")
     return {
-        "success": 1
+        "success": "1" if result else "0",
+        "message": message,
+        "positionnumber": positionnumber
+    }
+
+
+# delete position
+@app.route('/ptz/deleteposition', methods = ['POST'])
+def delete_position():
+    data = request.json
+    cameraposition_m = CameraPosition_m()
+    result, message = cameraposition_m.delete(data["camerapositionid"])
+    return {
+        "success": "1" if result else "0",
+        "message": message
+    }
+
+
+# list position
+@app.route('/ptz/listposition')
+def list_position():
+    global cameraid
+
+    cameraposition_m = CameraPosition_m()
+    result, message = cameraposition_m.list(cameraid)
+    return {
+        "success": "1" if result else "0",
+        "message": message,
+        "data": result
+    }
+
+
+
+
+
+
+
+# capture image
+@app.route('/ptz/captureimage')
+def ptz_capture_image():
+    global dosnapshot
+
+    dosnapshot = True
+    return {
+        "data": None
     }
