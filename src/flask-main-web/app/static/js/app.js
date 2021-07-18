@@ -38,13 +38,15 @@ $(".btn_onoff").click(function() {
                         mybutton.text('オフ');
                         mybutton.removeClass("btn-success");
                         mybutton.addClass("btn-danger");
-                        $("#img_camera_" + camera.cameraid).attr('src', 'http://localhost:8081/ptz/video_feed');
+                        //$("#img_camera_" + camera.cameraid).attr('src', 'http://localhost:8081/ptz/video_feed');
+                        location.reload();
                     }
                     else {                        
                         mybutton.text('オン');
                         mybutton.removeClass("btn-danger");
                         mybutton.addClass("btn-success");
-                        $("#img_camera_" + camera.cameraid).attr('src', '/static/img/no-cctv.png');
+                        location.reload();
+                        //$("#img_camera_" + camera.cameraid).attr('src', '/static/img/no-cctv.png');
                     }
                     // set back to button
                     mybutton.data("camera", JSON.stringify(camera));

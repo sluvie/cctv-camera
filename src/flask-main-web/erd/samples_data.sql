@@ -1,0 +1,1 @@
+insert into t_user(userid, username, password, name, isadmin) values(default, 'user1', 't5kskadg', 'User 1', 1);

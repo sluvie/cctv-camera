@@ -88,7 +88,8 @@ COMMENT ON TABLE public.t_camera_position
 CREATE TABLE public.t_camera_snapshot
 (
     camerasnapshotid uuid NOT NULL DEFAULT gen_random_uuid(),
-    camerabase64 character varying NOT NULL,
+    snapshotfilename character varying NOT NULL,
+    snapshottype integer NOT NULL DEFAULT 0, -- 0: IMAGE, 1: VIDEO
     cameraid uuid NOT NULL,
     created timestamp NOT NULL DEFAULT now(),
     createby character varying,

@@ -32,7 +32,7 @@ $("#btn_saveuser").click(function () {
         success: function (data) {
             if (data.success) {
                 if (data.success == "1") {
-                    Swal.fire('Inserted!', '', 'success');
+                    //Swal.fire('Inserted!', '', 'success');
                     location.reload();
                 } else {
                     Swal.fire(data.message, '', 'error');
@@ -69,7 +69,7 @@ $("#btn_edituser").click(function () {
         success: function (data) {
             if (data.success) {
                 if (data.success == "1") {
-                    Swal.fire('Updated!', '', 'success');
+                    //Swal.fire('Updated!', '', 'success');
                     location.reload();
                 } else {
                     Swal.fire(data.message, '', 'error');
