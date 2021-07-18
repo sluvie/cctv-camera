@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+    <h3 class="col-12 mt-5">SD CARD {{ title }}</h3>
+    <div class="row">
+
+        <ul style="list-style: none;">
+        {% for row in sdcard %}
+        <li><a href="/ptz/sdcard/{{ row.path }}/{{ row.isfile }}">{{ row.name }}</a></li>
+        {% endfor %}
+        </ul>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scriptcustom %}
+<!-- custom scripts -->
+<script src="/static/js/ptz/gallery.js"></script>
+{% endblock %}

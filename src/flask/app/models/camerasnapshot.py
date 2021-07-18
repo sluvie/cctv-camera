@@ -6,6 +6,7 @@ class CameraSnapshot_m:
     def __init__(self) -> None:
         self.conn = psycopg2.connect(
             host=DATABASE_CONFIG["host"],
+            port=DATABASE_CONFIG["port"],
             database=DATABASE_CONFIG["database"],
             user=DATABASE_CONFIG["user"],
             password=DATABASE_CONFIG["password"])
@@ -14,7 +15,7 @@ class CameraSnapshot_m:
     def list(self, cameraid):
         try:
             cur = self.conn.cursor()
-            query = "select camerasnapshotid, camerabase64 from t_camera_snapshot where cameraid='{}' order by created".format(cameraid)
+            query = "select camerasnapshotid, snapshotfilename, snapshottype from t_camera_snapshot where cameraid='{}' order by created".format(cameraid)
             cur.execute(query)
             rows = cur.fetchall()
             if rows == None:
@@ -24,7 +25,8 @@ class CameraSnapshot_m:
                 for row in rows:
                     row = {
                         'camerasnapshotid': row[0],
-                        'camerabase64': row[1]
+                        'snapshotfilename': row[1],
+                        'snapshottype': row[2]
                     }
                     result.append(row)
                 return result, ""
@@ -35,7 +37,7 @@ class CameraSnapshot_m:
     def readone(self, camerapositionid):
         try:
             cur = self.conn.cursor()
-            query = "select camerasnapshotid, camerabase64 from t_camera_snapshot where where camerasnapshotid='{}' order by created".format(camerasnapshotid)
+            query = "select camerasnapshotid, snapshotfilename, snapshottype from t_camera_snapshot where where camerasnapshotid='{}' order by created".format(camerasnapshotid)
             cur.execute(query)
             row = cur.fetchone()
             if row == None:
@@ -43,18 +45,19 @@ class CameraSnapshot_m:
             else:
                 result = {
                         'camerasnapshotid': row[0],
-                        'camerabase64': row[1]
+                        'snapshotfilename': row[1],
+                        'snapshottype': row[2]
                     }
                 return result, ""
         except psycopg2.Error as e:
             return None, str(e)
 
 
-    def insert(self, camerabase64, cameraid, createby):
+    def insert(self, snapshotfilename, snapshottype, cameraid, createby):
         try:
             cur = self.conn.cursor()
-            query = "insert into t_camera_snapshot(camerasnapshotid, camerabase64, cameraid, createby) " \
-                "values (default, decode(''{}'', 'base64'), '{}', '{}')".format(camerabase64, cameraid, createby)
+            query = "insert into t_camera_snapshot(camerasnapshotid, snapshotfilename, snapshottype, cameraid, createby) " \
+                "values (default, '{}', {}, '{}', '{}')".format(snapshotfilename, snapshottype, cameraid, createby)
             cur.execute(query)
             self.conn.commit()
             return True, ""

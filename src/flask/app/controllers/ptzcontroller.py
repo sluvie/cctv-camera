@@ -1,5 +1,6 @@
 from flask import (
     render_template, 
+    send_file,
     g,
     request,
     Response,
@@ -10,11 +11,20 @@ from app import app
 import cv2
 import base64
 import time
-import requests
-from requests.auth import HTTPBasicAuth
 import json
 import threading
 import configparser
+
+# http
+import requests
+from requests.auth import HTTPBasicAuth
+from bs4 import BeautifulSoup
+
+
+# setting
+from app.settings import UPLOADS_IMAGES_PATH
+from app.settings import UPLOADS_VIDEOS_PATH
+from app.settings import DOWNLOADS_PATH
 
 # database
 from app.models.cameraposition import CameraPosition_m
@@ -45,7 +55,7 @@ snapshot_m = CameraSnapshot_m()
 
 
 # CAMERA FUNCTION
-def gen_frames(width=800, height=600):
+def gen_frames(width=320, height=240):
     global outputFrame, lock, camera, dosnapshot, cameraid
 
     while True:
@@ -66,17 +76,22 @@ def gen_frames(width=800, height=600):
             if dosnapshot:
                 print("=========================================> SNAPSHOT")
                 # save to 
-                (flag, encodedImage) = cv2.imencode('.jpg', outputFrame)
-                jpg_as_text = base64.b64encode(encodedImage)
-                result, message = snapshot_m.insert(jpg_as_text, cameraid, "suli")
-                print(message)
+                filepath = UPLOADS_IMAGES_PATH
+                # save full frame
+                filename = "frame-" + time.strftime("%d-%m-%Y-%H-%M-%S") + ".jpg"
+                cv2.imwrite(filepath + "/" + filename, cv2.cvtColor(outputFrame, cv2.COLOR_RGB2BGR))
+                # save thumb frame
+                dim = (200, 150)
+                resized = cv2.resize(outputFrame, dim) 
+                cv2.imwrite(filepath + "/thumb/" + filename, cv2.cvtColor(resized, cv2.COLOR_RGB2BGR))
+                
+                result, message = snapshot_m.insert(filename, 1, cameraid, "suli")
                 dosnapshot = False
 
             # encode the frame in JPEG format
             dim = (width, height)
             resized = cv2.resize(outputFrame, dim) 
             (flag, encodedImage) = cv2.imencode('.jpg', resized)
-            #(flag, encodedImage) = cv2.imencode(".jpg", outputFrame)
 
             # ensure the frame was successfully encoded
             if not flag:
@@ -124,7 +139,7 @@ def ptz_right(speed: str):
     return { "success": 1 }
 
 # send ptz turn up
-@app.route('/ptz/up')
+@app.route('/ptz/up/<speed>')
 def ptz_up(speed: str):
     global ipaddress, port, username, password
     
@@ -260,10 +275,7 @@ def list_position():
     }
 
 
-
-
-
-
+# GALLERY / CAPTURE
 
 # capture image
 @app.route('/ptz/captureimage')
@@ -274,3 +286,108 @@ def ptz_capture_image():
     return {
         "data": None
     }
+
+
+# gallery
+@app.route('/ptz/gallery')
+def ptz_gallery():
+    global ipaddress, cameraid
+
+    galleries, message = snapshot_m.list(cameraid)
+
+    return render_template(
+        'ptz/gallery.html', 
+        title=ipaddress,
+        description="",
+        galleries=galleries)
+
+
+# sdcard
+def get_url_paths(url, username, password, ext='', params={}):
+    response = requests.get(url, auth=HTTPBasicAuth(username, password), params=params)
+    if response.ok:
+        response_text = response.text
+    else:
+        return response.raise_for_status()
+    soup = BeautifulSoup(response_text, 'html.parser')
+    parent = [url + node.get('href') for node in soup.find_all('a') if node.get('href').endswith(ext)]
+    return parent
+
+
+@app.route('/ptz/sdcard/<path>/<isfile>')
+def ptz_sdcard(path=None,isfile=0):
+    global ipaddress, port, username, password
+
+
+    # absolutely download file
+    if isfile == "1":
+        # get name file, take the last array
+        f_split = path.split("-")
+        filename = f_split[-1]
+        
+        url_download = path.replace("-", "/")
+        url_download = "http://{}:{}/sd/{}".format(ipaddress, port, url_download)
+        params = {}
+        response = requests.get(url_download, auth=HTTPBasicAuth(username, password), params=params)
+        print(response)
+        if response.ok:
+            with open(DOWNLOADS_PATH + filename, 'wb') as f:
+                f.write(response.content)
+            return send_file(DOWNLOADS_PATH + filename, attachment_filename=filename)
+        else:
+            return response.raise_for_status()
+
+    else:
+        # result data
+        sdcard = []
+
+        # prepare the url
+        url = "http://{}:{}/sd/".format(ipaddress, port)
+        if not path == "root":
+            url_path = path.replace("-", "/")
+            url = "http://{}:{}/sd/{}/".format(ipaddress, port, url_path)
+
+        # get folder
+        result = get_url_paths(url, username, password, '')
+        for row in result:
+            f = row.replace(url, '')
+            
+            # only get name of folder / file
+            if not path == "root":
+                f = f.replace('/sd/{}/'.format(url_path), '')
+            else:
+                f = f.replace('/sd/', '')
+
+            # pick only folder not file
+            if f.endswith('/'):
+                data = {
+                    "name": f.rstrip(f[-1]),
+                    "path": f.rstrip(f[-1]) if path == "root" else path + "-" + f.rstrip(f[-1]),
+                    "isfile": 0
+                }
+                sdcard.append(data)
+
+        # get db file
+        result = get_url_paths(url, username, password, '.265')
+        for row in result:
+            f = row.replace(url, '')
+            
+            # only get name of folder / file
+            if not path == "root":
+                f = f.replace('/sd/{}/'.format(url_path), '')
+            else:
+                f = f.replace('/sd/', '')
+
+            # pick files
+            data = {
+                "name": f,
+                "path": f if path == "root" else path + "-" + f,
+                "isfile": 1
+            }
+            sdcard.append(data)
+
+        return render_template(
+            'ptz/sdcard.html', 
+            title=ipaddress,
+            description="",
+            sdcard=sdcard)

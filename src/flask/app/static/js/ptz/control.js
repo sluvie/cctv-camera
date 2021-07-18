@@ -271,6 +271,6 @@ $("#btn_captureimage").click(function () {
     console.log("capture image");
     $.get("/ptz/captureimage", function( data ) {
         console.log(data);
-        Swal.fire("Data will be saved at Libraries", '', 'info');
+        Swal.fire("Data will be saved at Gallery", '', 'info');
     });
 });
