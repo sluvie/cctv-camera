@@ -58,6 +58,20 @@ COMMENT ON TABLE public.t_camera
     IS 'list of registered camera';
 
 
+-- company name
+ALTER TABLE public.t_camera
+ADD COLUMN companyname character varying NOT NULL DEFAULT '';
+
+-- place name
+ALTER TABLE public.t_camera
+ADD COLUMN placename character varying NOT NULL DEFAULT '';
+
+-- position order
+ALTER TABLE public.t_camera
+ADD COLUMN positionorder integer NOT NULL DEFAULT 1;
+
+
+
 -- CAMERA POSITION
 
 CREATE TABLE public.t_camera_position

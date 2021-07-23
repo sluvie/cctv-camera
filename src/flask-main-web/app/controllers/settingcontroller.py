@@ -45,7 +45,7 @@ def addcamera():
 
     data = request.json
     camera_m = Camera_m()
-    result, message = camera_m.insert(data["ip"], data["port"], data["rtspport"], data["username"], data["password"], "suli")
+    result, message = camera_m.insert(data["companyname"], data["placename"], data["positionorder"], data["ip"], data["port"], data["rtspport"], data["username"], data["password"], "suli")
     return {
         "success": "1" if result else "0",
         "message": message
@@ -60,7 +60,7 @@ def editcamera():
 
     data = request.json
     camera_m = Camera_m()
-    result, message = camera_m.update(data["cameraid"], data["ip"], data["port"], data["rtspport"], data["username"], data["password"], "suli")
+    result, message = camera_m.update(data["cameraid"], data["companyname"], data["placename"], data["positionorder"], data["ip"], data["port"], data["rtspport"], data["username"], data["password"], "suli")
     return {
         "success": "1" if result else "0",
         "message": message

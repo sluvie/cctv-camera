@@ -15,7 +15,7 @@ class Camera_m:
     def list(self):
         try:
             cur = self.conn.cursor()
-            query = "select cameraid, ip, webport, rtspport, username, password, dockerid, dockername, dockerport, onoff from t_camera order by created"
+            query = "select cameraid, ip, webport, rtspport, username, password, dockerid, dockername, dockerport, onoff, companyname, placename, positionorder from t_camera order by positionorder"
             cur.execute(query)
             rows = cur.fetchall()
             if rows == None:
@@ -33,7 +33,10 @@ class Camera_m:
                         'dockerid': row[6],
                         'dockername': row[7],
                         'dockerport': row[8],
-                        'onoff': row[9]
+                        'onoff': row[9],
+                        'companyname': row[10],
+                        'placename': row[11],
+                        'positionorder': row[12]
                     }
                     result.append(row)
                 return result
@@ -44,8 +47,8 @@ class Camera_m:
     def readone(self, cameraid):
         try:
             cur = self.conn.cursor()
-            query = "select cameraid, ip, webport, rtspport, username, password, dockerid, dockername, dockerport, onoff from t_camera where cameraid='{}' order by created".format(cameraid)
-            cur.execute(query)
+            query = "select cameraid, ip, webport, rtspport, username, password, dockerid, dockername, dockerport, onoff, companyname, placename, positionorder from t_camera where cameraid=%s order by created"
+            cur.execute(query, (cameraid, ))
             row = cur.fetchone()
             if row == None:
                 return None, "Data not found"
@@ -60,29 +63,34 @@ class Camera_m:
                         'dockerid': row[6],
                         'dockername': row[7],
                         'dockerport': row[8],
-                        'onoff': row[9]
+                        'onoff': row[9],
+                        'companyname': row[10],
+                        'placename': row[11],
+                        'positionorder': row[12]
                     }
                 return result, ""
         except psycopg2.Error as e:
             return None, str(e)
 
 
-    def insert(self, ip, port, rtspport, username, password, createby):
+    def insert(self, companyname, placename, positionorder, ip, port, rtspport, username, password, createby):
         try:
             cur = self.conn.cursor()
-            query = "insert into t_camera(cameraid, ip, webport, rtspport, username, password, createby) values (default, '{}', '{}', '{}', '{}', '{}', '{}')".format(ip, port, rtspport, username, password, createby)
-            cur.execute(query)
+            query = "insert into t_camera(cameraid, companyname, placename, positionorder, ip, webport, rtspport, username, password, createby) " \
+                "values (default, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            cur.execute(query, (companyname, placename, positionorder, ip, port, rtspport, username, password, createby, ))
             self.conn.commit()
             return True, ""
         except psycopg2.Error as e:
             return False, str(e)
 
 
-    def update(self, cameraid, ip, port, rtspport, username, password, updateby):
+    def update(self, cameraid, companyname, placename, positionorder, ip, port, rtspport, username, password, updateby):
         try:
             cur = self.conn.cursor()
-            query = "update t_camera set ip='{}', webport='{}', rtspport='{}', username='{}', password='{}', updated=now(), updateby='{}' where cameraid='{}'".format(ip, port, rtspport, username, password, updateby, cameraid)
-            cur.execute(query)
+            query = "update t_camera set companyname=%s, placename=%s, positionorder=%s, " \
+                "ip=%s, webport=%s, rtspport=%s, username=%s, password=%s, updated=now(), updateby=%s where cameraid=%s"
+            cur.execute(query, (companyname, placename, positionorder, ip, port, rtspport, username, password, updateby, cameraid, ))
             self.conn.commit()
             return True, ""
         except psycopg2.Error as e:
@@ -92,8 +100,8 @@ class Camera_m:
     def delete(self, cameraid):
         try:
             cur = self.conn.cursor()
-            query = "delete from t_camera where cameraid='{}'".format(cameraid)
-            cur.execute(query)
+            query = "delete from t_camera where cameraid=%s"
+            cur.execute(query, (cameraid, ))
             self.conn.commit()
             return True, ""
         except psycopg2.Error as e:
@@ -103,8 +111,8 @@ class Camera_m:
     def update_onoff(self, cameraid, onoff, updateby):
         try:
             cur = self.conn.cursor()
-            query = "update t_camera set onoff={}, updated=now(), updateby='{}' where cameraid='{}'".format(onoff, updateby, cameraid)
-            cur.execute(query)
+            query = "update t_camera set onoff=%s, updated=now(), updateby=%s where cameraid=%s"
+            cur.execute(query, (onoff, updateby, cameraid))
             self.conn.commit()
             return True, ""
         except psycopg2.Error as e:

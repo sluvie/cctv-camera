@@ -13,6 +13,9 @@ $("#btn_savecamera").click(function() {
     console.log("save camera.");
 
     var data = {
+        "companyname": $("#companyname").val(),
+        "placename": $("#placename").val(),
+        "positionorder": $("#positionorder").val(),
         "ip": $("#ip").val(),
         "port": $("#port").val(),
         "rtspport": $("#rtsp-port").val(),
@@ -33,7 +36,7 @@ $("#btn_savecamera").click(function() {
         success: function (data) {
             if (data.success) {
                 if (data.success == "1") {
-                    //Swal.fire('Inserted!', '', 'success')
+                    $.LoadingOverlay("hide");
                     location.reload();
                 } else {
                     Swal.fire(data.message, '', 'error')
@@ -52,6 +55,9 @@ $("#btn_editcamera").click(function () {
 
     var data = {
         "cameraid": $(this).data("cameraid"),
+        "companyname": $("#edit_companyname").val(),
+        "placename": $("#edit_placename").val(),
+        "positionorder": $("#edit_positionorder").val(),
         "ip": $("#edit_ip").val(),
         "port": $("#edit_port").val(),
         "rtspport": $("#edit_rtsp-port").val(),
@@ -72,7 +78,7 @@ $("#btn_editcamera").click(function () {
         success: function (data) {
             if (data.success) {
                 if (data.success == "1") {
-                    //Swal.fire('Updated!', '', 'success');
+                    $.LoadingOverlay("hide");
                     location.reload();
                 } else {
                     Swal.fire(data.message, '', 'error');
@@ -117,6 +123,7 @@ $("#btn_deletecamera").click(function() {
                 success: function (data) {
                     if (data.success) {
                         if (data.success == "1") {
+                            $.LoadingOverlay("hide");
                             Swal.fire('Deleted!', '', 'success');
                             location.reload();
                         } else {
@@ -157,6 +164,9 @@ $(".btn_infoeditcamera").click(function () {
                 if (data.success == "1") {
                     // fill the data
                     var camera = data.data;
+                    $("#edit_companyname").val(camera.companyname);
+                    $("#edit_placename").val(camera.placename);
+                    $("#edit_positionorder").val(camera.positionorder);
                     $("#edit_ip").val(camera.ip);
                     $("#edit_port").val(camera.webport);
                     $("#edit_rtsp-port").val(camera.rtspport);
@@ -169,7 +179,7 @@ $(".btn_infoeditcamera").click(function () {
                     Swal.fire(data.message, '', 'error');
                 }
             } else {
-                Swal.fire("Failed to get data project", '', 'error');
+                Swal.fire("Failed to get data camera", '', 'error');
             }
             $.LoadingOverlay("hide");
         }
@@ -199,6 +209,9 @@ $(".btn_infocamera").click(function() {
                 if (data.success == "1") {
                     // fill the data
                     var camera = data.data;
+                    $("#label_detail_camera_companyname").text(camera.companyname);
+                    $("#label_detail_camera_placename").text(camera.placename);
+                    $("#label_detail_camera_positionorder").text(camera.positionorder);
                     $("#label_detail_camera_ip").text(camera.ip);
                     $("#label_detail_camera_port").text(camera.webport);
                     $("#label_detail_camera_rtsp_port").text(camera.rtspport);
@@ -210,7 +223,7 @@ $(".btn_infocamera").click(function() {
                     Swal.fire(data.message, '', 'error');
                 }
             } else {
-                Swal.fire("Failed to get data project", '', 'error');
+                Swal.fire("Failed to get data camera", '', 'error');
             }
             $.LoadingOverlay("hide");
         }

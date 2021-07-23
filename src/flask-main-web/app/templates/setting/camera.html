@@ -17,6 +17,9 @@
         <table id="tbl-main" class="table table-striped table-bordered" style="width:100%">
             <thead>
                 <tr>
+                    <th>会社名</th>
+                    <th>現場名</th>
+                    <th>Camera (Mapping)</th>
                     <th>Ip</th>
                     <th>Port</th>
                     <th>RTSP Port</th>
@@ -26,6 +29,9 @@
             <tbody>
                 {% for row in cameras %}
                 <tr>
+                    <td>{{ row.companyname }}</td>
+                    <td>{{ row.placename }}</td>
+                    <td>Camera-{{ row.positionorder }}</td>
                     <td>{{ row.ip }}</td>
                     <td>{{ row.webport }}</td>
                     <td>{{ row.rtspport }}</td>

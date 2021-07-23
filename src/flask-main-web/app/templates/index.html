@@ -7,11 +7,15 @@
             {% for row in cameras %}
             <div class="col-4">
                 <div class="row p-1 m-2 bg-light">
+
+                    <div class="col-12 mt-2">
+                        <span>{{ row.companyname }} - {{ row.placename }}</span>
+                    </div>
                     <div class="col-12 mt-2">
                         {% if row.onoff == 0 %}
-                        <img src="/static/img/no-cctv.png" width="100%" id="img_camera_{{ row.cameraid }}" />
+                        <img src="/static/img/no-cctv-320.png" width="240px" height="200px" id="img_camera_{{ row.cameraid }}" />
                         {% else %}
-                        <img src="http://153.126.161.130/{{ row.dockername }}/ptz/video_feed" width="100%" id="img_camera_{{ row.cameraid }}" />
+                        <img src="http://153.126.161.130/{{ row.dockername }}/ptz/video_feed" width="240px" height="200px" id="img_camera_{{ row.cameraid }}" />
                         {% endif %}
                     </div>
                     <div class="col-12 mt-2">
@@ -19,6 +23,9 @@
                     </div>
                     <div class="col-12 mt-2">
                         <span>{{ row.cameraid }}</span>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <span>Camera-{{ row.positionorder }}</span>
                     </div>
                     <div class="col-12 mt-2">
                         <div class="row">

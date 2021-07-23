@@ -15,8 +15,8 @@ class User_m:
     def list(self, deleteflag=0):
         try:
             cur = self.conn.cursor()
-            query = "select userid, username, password, name, isadmin from t_user where deleteflag={} order by created".format(deleteflag)
-            cur.execute(query)
+            query = "select userid, username, password, name, isadmin from t_user where deleteflag=%s order by created"
+            cur.execute(query, (deleteflag, ))
             rows = cur.fetchall()
             if rows == None:
                 return None
@@ -39,8 +39,8 @@ class User_m:
     def readone(self, userid):
         try:
             cur = self.conn.cursor()
-            query = "select userid, username, password, name, isadmin from t_user where userid='{}' order by created".format(userid)
-            cur.execute(query)
+            query = "select userid, username, password, name, isadmin from t_user where userid=%s"
+            cur.execute(query, (userid, ))
             row = cur.fetchone()
             if row == None:
                 return None, "Data not found"
@@ -60,8 +60,8 @@ class User_m:
     def get(self, username, deleteflag=0):
         try:
             cur = self.conn.cursor()
-            query = "select userid, username, password, name, isadmin from t_user where username='{}' and deleteflag={} order by created".format(username, deleteflag)
-            cur.execute(query)
+            query = "select userid, username, password, name, isadmin from t_user where username=%s and deleteflag=%s"
+            cur.execute(query, (username, deleteflag, ))
             row = cur.fetchone()
             if row == None:
                 return None
@@ -81,8 +81,8 @@ class User_m:
     def insert(self, username, password, name, isadmin, createby):
         try:
             cur = self.conn.cursor()
-            query = "insert into t_user(userid, username, password, name, isadmin, createby) values (default, '{}', '{}', '{}', {}, '{}')".format(username, password, name, isadmin, createby)
-            cur.execute(query)
+            query = "insert into t_user(userid, username, password, name, isadmin, createby) values (default, %s, %s, %s, %s, %s)"
+            cur.execute(query, (username, password, name, isadmin, createby, ))
             self.conn.commit()
             return True, ""
         except psycopg2.Error as e:
@@ -92,8 +92,8 @@ class User_m:
     def update(self, userid, password, name, isadmin, updateby):
         try:
             cur = self.conn.cursor()
-            query = "update t_user set password='{}', name='{}', isadmin={}, updated=now(), updateby='{}' where userid='{}'".format(password, name, isadmin, updateby, userid)
-            cur.execute(query)
+            query = "update t_user set password=%s, name=%s, isadmin=%s, updated=now(), updateby=%s where userid=%s"
+            cur.execute(query, (password, name, isadmin, updateby, userid, ))
             self.conn.commit()
             return True, ""
         except psycopg2.Error as e:
@@ -103,8 +103,8 @@ class User_m:
     def delete(self, userid, updateby):
         try:
             cur = self.conn.cursor()
-            query = "update t_user set deleteflag=1, updated=now(), updateby='{}' where userid='{}'".format(updateby, userid)
-            cur.execute(query)
+            query = "update t_user set deleteflag=1, updated=now(), updateby=%s where userid=%s"
+            cur.execute(query, (updateby, userid, ))
             self.conn.commit()
             return True, ""
         except psycopg2.Error as e:
