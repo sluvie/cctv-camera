@@ -9,10 +9,10 @@
         <div class="col">
             <div class="row mt-5">
                 <div class="col-12">
-                    <img src="/static/uploads/images/thumb/{{ row.snapshotfilename }}">
+                    <img src="/ptz/thumbnail/{{ row.snapshotfilename }}">
                 </div>
                 <div class="col-12 mt-2">
-                    <a class="btn btn-info" href="/static/uploads/images/{{ row.snapshotfilename }}" download="{{ row.snapshotfilename }}">Download</a>
+                    <a class="btn btn-info" href="/ptz/download/{{ row.snapshotfilename }}" download="{{ row.snapshotfilename }}">Download</a>
                 </div>
             </div>
         </div>
@@ -24,5 +24,7 @@
 
 {% block scriptcustom %}
 <!-- custom scripts -->
+<!--
 <script src="/static/js/ptz/gallery.js"></script>
+-->
 {% endblock %}

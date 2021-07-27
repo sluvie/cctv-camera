@@ -1,38 +1,41 @@
 $(document).ready(function () {
     console.log("Ready.");
+
+    $("#btn_stopvideo").prop('disabled', true);
+    $("#btn_recordvideo").prop('disabled', false);  
 })
 
 $("#btn_left").click(function () {
     console.log("left");
-    $.get("/ptz/left/5", function( data ) {
+    $.get("/ptz/left/5", function (data) {
         console.log(data);
     });
 });
 
 $("#btn_right").click(function () {
     console.log("right");
-    $.get("/ptz/right/5", function( data ) {
+    $.get("/ptz/right/5", function (data) {
         console.log(data);
     });
 });
 
 $("#btn_up").click(function () {
     console.log("up");
-    $.get("/ptz/up/5", function( data ) {
+    $.get("/ptz/up/5", function (data) {
         console.log(data);
     });
 });
 
 $("#btn_down").click(function () {
     console.log("down");
-    $.get("/ptz/down/5", function( data ) {
+    $.get("/ptz/down/5", function (data) {
         console.log(data);
     });
 });
 
 $("#btn_stop").click(function () {
     console.log("stop");
-    $.get("/ptz/stop", function( data ) {
+    $.get("/ptz/stop", function (data) {
         console.log(data);
     });
 });
@@ -42,10 +45,10 @@ $("#btn_stop").click(function () {
 $("#btn_left_degree").click(function () {
     console.log("left degree");
     var speed = $("#tx_left_degree").val()
-    $.get("/ptz/left/" + speed, function( data ) {
+    $.get("/ptz/left/" + speed, function (data) {
         console.log(data);
-        setTimeout(function(){
-            $.get("/ptz/stop", function() {});
+        setTimeout(function () {
+            $.get("/ptz/stop", function () { });
         }, 5000);
     });
 });
@@ -53,10 +56,10 @@ $("#btn_left_degree").click(function () {
 $("#btn_right_degree").click(function () {
     console.log("right degree");
     var speed = $("#tx_right_degree").val()
-    $.get("/ptz/right/" + speed, function( data ) {
+    $.get("/ptz/right/" + speed, function (data) {
         console.log(data);
-        setTimeout(function(){
-            $.get("/ptz/stop", function() {});
+        setTimeout(function () {
+            $.get("/ptz/stop", function () { });
         }, 5000);
     });
 });
@@ -64,10 +67,10 @@ $("#btn_right_degree").click(function () {
 $("#btn_up_degree").click(function () {
     console.log("up degree");
     var speed = $("#tx_up_degree").val()
-    $.get("/ptz/up/" + speed, function( data ) {
+    $.get("/ptz/up/" + speed, function (data) {
         console.log(data);
-        setTimeout(function(){
-            $.get("/ptz/stop", function() {});
+        setTimeout(function () {
+            $.get("/ptz/stop", function () { });
         }, 5000);
     });
 });
@@ -75,10 +78,10 @@ $("#btn_up_degree").click(function () {
 $("#btn_down_degree").click(function () {
     console.log("down degree");
     var speed = $("#tx_down_degree").val()
-    $.get("/ptz/down/" + speed, function( data ) {
+    $.get("/ptz/down/" + speed, function (data) {
         console.log(data);
-        setTimeout(function(){
-            $.get("/ptz/stop", function() {});
+        setTimeout(function () {
+            $.get("/ptz/stop", function () { });
         }, 5000);
     });
 });
@@ -90,14 +93,14 @@ $("#btn_down_degree").click(function () {
 
 $("#btn_zoomin").click(function () {
     console.log("zoomin");
-    $.get("/ptz/zoomin", function( data ) {
+    $.get("/ptz/zoomin", function (data) {
         console.log(data);
     });
 });
 
 $("#btn_zoomout").click(function () {
     console.log("zoomout");
-    $.get("/ptz/zoomout", function( data ) {
+    $.get("/ptz/zoomout", function (data) {
         console.log(data);
     });
 });
@@ -107,14 +110,14 @@ $("#btn_zoomout").click(function () {
 
 /* SAVE LOAD POSITION */
 
-$("#btn_showsaveposition").click(function() {
+$("#btn_showsaveposition").click(function () {
     console.log("show save position");
     $("#position-name").val("")
     $("#savepositionModal").modal('show');
 });
 
 
-$("#btn_showloadposition").click(function() {
+$("#btn_showloadposition").click(function () {
     console.log("show load position");
 
     $.LoadingOverlay("show");
@@ -135,7 +138,7 @@ $("#btn_showloadposition").click(function() {
                     index = 1;
                     $("#position-list").html("");
                     list.forEach(element => {
-                        var content = 
+                        var content =
                             "<div class='row mt-2'> " +
                             "    <div class='col-1'>" + index + "</div> " +
                             "    <div class='col-7'>" + element.positionname + "</div> " +
@@ -154,7 +157,7 @@ $("#btn_showloadposition").click(function() {
                         $("#position-list").append(content);
                         index++;
                     });
-                    
+
                     $("#loadpositionModal").modal('show');
                     $.LoadingOverlay("hide");
                 }
@@ -191,7 +194,7 @@ $("#btn_saveposition").click(function () {
             $.LoadingOverlay("hide");
             if (data.success) {
                 if (data.success == "1") {
-                    $.get(url_preset_set + "/" + data.positionnumber, function( setdata ) {
+                    $.get(url_preset_set + "/" + data.positionnumber, function (setdata) {
                         console.log(setdata);
                         $("#loadpositionModal").modal("hide");
                     });
@@ -232,7 +235,7 @@ function deleteposition(evt) {
             $.LoadingOverlay("hide");
             if (data.success) {
                 if (data.success == "1") {
-                    $.get(url_preset_remove + "/" + positionnumber, function( data ) {
+                    $.get(url_preset_remove + "/" + positionnumber, function (data) {
                         console.log(data);
                     });
                     $("#loadpositionModal").modal('hide');
@@ -252,7 +255,7 @@ function gotoposition(evt) {
     console.log("goto position");
     var positionnumber = evt.getAttribute("data-positionnumber");
 
-    $.get(url_preset_goto + "/" + positionnumber, function( data ) {
+    $.get(url_preset_goto + "/" + positionnumber, function (data) {
         console.log(data);
         $("#loadpositionModal").modal("hide");
     });
@@ -265,12 +268,76 @@ function gotoposition(evt) {
 
 
 
-
-
+/* CAPTURE */
+// snapshot
 $("#btn_captureimage").click(function () {
     console.log("capture image");
-    $.get("/ptz/captureimage", function( data ) {
-        console.log(data);
-        Swal.fire("Data will be saved at Gallery", '', 'info');
+
+    $.ajax({
+        type: "GET",
+        url: "/ptz/captureimage",
+        async: false,
+        error: function () {
+            $.LoadingOverlay("hide");
+            Swal.fire("Error", '', 'error');
+        },
+        success: function (data) {
+            $.LoadingOverlay("hide");
+            var a = document.createElement("a"); //Create <a>
+            a.href = "data:image/jpeg;base64," + data; //Image Base64 Goes here
+            a.download = "snapshot.jpg"; //File name Here
+            a.click(); //Downloaded file
+        }
     });
 });
+
+// record
+$("#btn_recordvideo").click(function () {
+    console.log("record video");
+
+    // var url = window.location.href + "record_status";
+    $(this).prop('disabled', true);
+    $("#btn_stopvideo").prop('disabled', false);
+    
+    // disable download link
+    //var downloadLink = document.getElementById("download");
+    //downloadLink.text = "";
+    //downloadLink.href = "";
+
+    // XMLHttpRequest
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            // alert(xhr.responseText);
+        }
+    }
+    xhr.open("POST", "/ptz/record_status");
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.send(JSON.stringify({ status: "true" }));
+});
+
+// stop record
+$("#btn_stopvideo").click(function () {
+    console.log("stop record");
+    
+    $(this).prop('disabled', true);
+    $("#btn_recordvideo").prop('disabled', false);   
+
+    // XMLHttpRequest
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            // alert(xhr.responseText);
+
+            // enable download link
+            //var downloadLink = document.getElementById("download");
+            //downloadLink.text = "Download Video";
+            //downloadLink.href = "/static/video.avi";
+        }
+    }
+    xhr.open("POST", "/ptz/record_status");
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.send(JSON.stringify({ status: "false" }));
+});
+
+/* END OF CAPTURE */

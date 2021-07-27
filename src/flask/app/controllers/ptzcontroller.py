@@ -5,7 +5,9 @@ from flask import (
     request,
     Response,
     redirect,
-    url_for)
+    url_for,
+    send_from_directory,
+    jsonify)
 from app import app
 
 import cv2
@@ -40,23 +42,44 @@ username = config.get('CAMERA', 'username')
 password = config.get('CAMERA', 'password')
 cameraid = config.get('CAMERA', 'cameraid')
 
-video_source = "rtsp://{}/1".format(ipaddress)
-camera = cv2.VideoCapture(video_source)
-
-# trial camera laptop
-#camera = cv2.VideoCapture(0)
-
 # tools camera
-outputFrame = None
 lock = threading.Lock()
-# tools snapshot
-dosnapshot = False
-snapshot_m = CameraSnapshot_m()
 
+# import video camera
+from app.libraries.recording import VideoCamera
+
+video_camera = None
+global_frame = None
 
 # CAMERA FUNCTION
-def gen_frames(width=320, height=240):
-    global outputFrame, lock, camera, dosnapshot, cameraid
+def video_stream():
+    global video_camera 
+    global global_frame
+
+    if video_camera == None:
+        video_camera = VideoCamera()
+        
+    while True:
+        with lock:
+            success, frame = video_camera.get_frame()
+
+            if not success:
+                video_camera = VideoCamera()
+                break
+
+            if frame != None:
+                global_frame = frame
+                yield (b'--frame\r\n'
+                        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+            else:
+                yield (b'--frame\r\n'
+                                b'Content-Type: image/jpeg\r\n\r\n' + global_frame + b'\r\n\r\n')
+
+
+    '''
+    global outputFrame, lock, camera, dosnapshot, cameraid, camera
+    global filename_image, filename_video
+    global result_movie
 
     while True:
         # wait until the lock is required
@@ -78,20 +101,28 @@ def gen_frames(width=320, height=240):
                 # save to 
                 filepath = UPLOADS_IMAGES_PATH
                 # save full frame
-                filename = "frame-" + time.strftime("%d-%m-%Y-%H-%M-%S") + ".jpg"
-                cv2.imwrite(filepath + "/" + filename, cv2.cvtColor(outputFrame, cv2.COLOR_RGB2BGR))
+                cv2.imwrite(filepath + filename_image, cv2.cvtColor(outputFrame, cv2.COLOR_RGB2BGR))
                 # save thumb frame
                 dim = (200, 150)
                 resized = cv2.resize(outputFrame, dim) 
-                cv2.imwrite(filepath + "/thumb/" + filename, cv2.cvtColor(resized, cv2.COLOR_RGB2BGR))
+                cv2.imwrite(filepath + "thumb/" + filename_image, cv2.cvtColor(resized, cv2.COLOR_RGB2BGR))
                 
-                result, message = snapshot_m.insert(filename, 1, cameraid, "suli")
+                result, message = snapshot_m.insert(filename_image, 1, cameraid, "suli")
                 dosnapshot = False
+                filename_image = ""
 
+
+            # do capture movie
+            if docapturemovie:
+                print(result_movie)
+                result_movie.write(outputFrame)
+                
+
+            # show to the screen
             # encode the frame in JPEG format
-            dim = (width, height)
-            resized = cv2.resize(outputFrame, dim) 
-            (flag, encodedImage) = cv2.imencode('.jpg', resized)
+            #dim = (width, height)
+            #resized = cv2.resize(outputFrame, dim) 
+            (flag, encodedImage) = cv2.imencode('.jpg', outputFrame)
 
             # ensure the frame was successfully encoded
             if not flag:
@@ -100,24 +131,19 @@ def gen_frames(width=320, height=240):
         # yield the output frame in the byte format
         yield(b'--frame\r\n'
                 b'Content-Type: image/jpeg\r\n\r\n' + bytearray(encodedImage) + b'\r\n')
+
+    '''
+
+# render the camera (stream)
+@app.route('/ptz/video_feed')
+def ptz_video_feed():
+    return Response(video_stream(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
 # END OF CAMERA FUNCTION
 
 
-@app.route('/ptz/video_feed')
-def ptz_video_feed():
-    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route('/ptz/control', methods = ['GET'])
-def ptz_control():
-    global ipaddress, port, username, password
-    
-    return render_template(
-        'ptz/control.html', 
-        title=ipaddress,
-        ip=ipaddress,
-        port=port,
-        description="")
-
+# MOVE THE CAMERA
 # send ptz turn left
 @app.route('/ptz/left/<speed>')
 def ptz_left(speed: str):
@@ -197,8 +223,6 @@ def ptz_zoomout():
     return { "success": 1 }
 
 
-
-
 # send ptz goto preset
 @app.route('/ptz/gotopreset/<number>')
 def ptz_gotopreset(number: str):
@@ -230,9 +254,25 @@ def ptz_removepreset(number: str):
     PARAMS = {'cmd': "preset", "-act": "set", "-status":0, "-number": number}
     r = requests.get(url = URL, params = PARAMS, auth = HTTPBasicAuth(username, password))
     return { "success": 1 }
+# END OF MOVE THE CAMERA
 
 
 
+
+
+
+
+# main web
+@app.route('/ptz/control', methods = ['GET'])
+def ptz_control():
+    global ipaddress, port, username
+    
+    return render_template(
+        'ptz/control.html', 
+        title=ipaddress,
+        ip=ipaddress,
+        port=port,
+        description="")
 
 # save position
 @app.route('/ptz/saveposition', methods = ['POST'])
@@ -248,7 +288,6 @@ def save_position():
         "positionnumber": positionnumber
     }
 
-
 # delete position
 @app.route('/ptz/deleteposition', methods = ['POST'])
 def delete_position():
@@ -260,7 +299,6 @@ def delete_position():
         "message": message
     }
 
-
 # list position
 @app.route('/ptz/listposition')
 def list_position():
@@ -269,7 +307,7 @@ def list_position():
     cameraposition_m = CameraPosition_m()
     result, message = cameraposition_m.list(cameraid)
     return {
-        "success": "1" if result else "0",
+        "success": "1",
         "message": message,
         "data": result
     }
@@ -280,12 +318,32 @@ def list_position():
 # capture image
 @app.route('/ptz/captureimage')
 def ptz_capture_image():
-    global dosnapshot
+    global video_camera
 
-    dosnapshot = True
-    return {
-        "data": None
-    }
+    success, img_jpeg = video_camera.get_frame()
+    if success:
+        jpg_as_text = base64.b64encode(img_jpeg)        
+        return jpg_as_text
+    else:
+        return ""
+
+# record video
+@app.route('/ptz/record_status', methods=['POST'])
+def record_status():
+    global video_camera 
+    if video_camera == None:
+        video_camera = VideoCamera()
+
+    json = request.get_json()
+
+    status = json['status']
+
+    if status == "true":
+        video_camera.start_record()
+        return jsonify(result="started")
+    else:
+        video_camera.stop_record()
+        return jsonify(result="stopped")
 
 
 # gallery
@@ -300,6 +358,16 @@ def ptz_gallery():
         title=ipaddress,
         description="",
         galleries=galleries)
+
+
+@app.route('/ptz/thumbnail/<path:filename>')
+def thumbnail_file(filename):
+    return send_from_directory(UPLOADS_IMAGES_PATH + "thumb/", filename, as_attachment=True)
+
+
+@app.route('/ptz/download/<path:filename>')
+def download_file(filename):
+    return send_from_directory(UPLOADS_IMAGES_PATH, filename, as_attachment=True)
 
 
 # sdcard
