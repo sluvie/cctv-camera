@@ -10,7 +10,7 @@
                 <h1>Camera</h1>
             </div>
             <div class="col-4 text-right">
-                <button class="btn btn-danger" data-toggle="modal" data-target="#addcameraModal"><i class="fas fa-plus"></i></button>
+                <button class="btn btn-dark" data-toggle="modal" data-target="#addcameraModal"><i class="fas fa-plus"></i> add camera</button>
             </div>
         </div>
 
@@ -36,8 +36,8 @@
                     <td>{{ row.webport }}</td>
                     <td>{{ row.rtspport }}</td>
                     <td class="text-center">
-                        <button class="btn btn-warning btn_infoeditcamera" data-cameraid="{{ row.cameraid }}"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-info btn_infocamera" data-cameraid="{{ row.cameraid }}"><i class="fas fa-info-circle"></i></button>
+                        <button class="btn btn-warning btn_infoeditcamera" data-cameraid="{{ row.cameraid }}"><i class="fas fa-edit"></i> edit</button>
+                        <a href="/setting/infocamera/{{ row.cameraid }}" class="btn btn-info btn_infocamera" data-cameraid="{{ row.cameraid }}"><i class="fas fa-info-circle"></i> info</a>
                     </td>
                 </tr>
                 {% endfor %}

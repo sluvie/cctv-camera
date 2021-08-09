@@ -185,12 +185,13 @@ $("#btn_saveposition").click(function () {
         data: JSON.stringify(data),
         contentType: 'application/json',
         dataType: 'json',
-        async: true,
+        async: false,
         error: function () {
             $.LoadingOverlay("hide");
             Swal.fire("Error", '', 'error');
         },
         success: function (data) {
+            console.log(data);
             $.LoadingOverlay("hide");
             if (data.success) {
                 if (data.success == "1") {

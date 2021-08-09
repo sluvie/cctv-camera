@@ -1,0 +1,127 @@
+{% extends 'layout/main.html' %}
+
+{% block content %}
+<div class="container">
+
+    <div class="mt-5">
+        <hr />
+        <div class="row mb-5">
+            <div class="col-8">
+                <h1>Information Camera {{ camera.ip }}</h1>
+            </div>
+            <div class="col-4 text-right">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-4">会社名</div>
+                    <div class="col-8"><span id="label_detail_camera_companyname">{{ camera.companyname }}</span></div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-4">現場名</div>
+                    <div class="col-8"><span id="label_detail_camera_placename">{{ camera.placename }}</span></div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-4">Start Date</div>
+                    <div class="col-8"><span id="label_detail_camera_startdate">{{ camera.startdate.strftime('%Y-%m-%d') }}</span></div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-4">End Date</div>
+                    <div class="col-8"><span id="label_detail_camera_enddate"></span>{{ camera.enddate.strftime('%Y-%m-%d') }}</div>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-4">Port</div>
+                    <div class="col-8"><span id="label_detail_camera_port">{{ camera.webport }}</span></div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-4">RTSP Port</div>
+                    <div class="col-8"><span id="label_detail_camera_rtsp_port">{{ camera.rtspport }}</span></div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-4">Username</div>
+                    <div class="col-8"><span id="label_detail_camera_username">{{ camera.username }}</span></div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-4">Password</div>
+                    <div class="col-8"><span id="label_detail_camera_password">{{ camera.password }}</span></div>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <h2>Server Settings</h2>
+        <div class="m-3">
+            <div class="row">
+                <div class="col-12 pt-2 pb-2 bg-dark text-white">
+                    <div class="row">
+                        <div class="col-4">Position Order (Camera Mapping)</div>
+                        <div class="col-8">Camera-<span id="label_detail_camera_positionorder">{{ camera.positionorder }}</span></div>
+                    </div>
+                </div>
+
+                {% if camera.dockerid == "" %}
+                <div class="col-12 pt-2 pb-2 text-center">
+                    <button class="btn btn-sm btn-primary" id="btn_generatecontainer" data-cameraid="{{ camera.cameraid }}">Generate</button>
+                </div>
+                {% else %}
+                <div id="dv_camera_docker">
+                    <div class="col-12 pt-2 pb-2">
+                        <div class="row">
+                            <div class="col-4">ID</div>
+                            <div class="col-8"><span id="label_detail_serverid"></span></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">Server Name</div>
+                            <div class="col-8"><span id="label_detail_servername"></span></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">Port</div>
+                            <div class="col-8"><span id="label_detail_serverport"></span></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">Status</div>
+                            <div class="col-8"><span id="label_detail_serverstatus"></span></div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-12 pt-2 pb-2 text-center">
+                        <button class="btn btn-sm btn-danger" data-cameraid="{{ camera.cameraid }}">Release</button>
+                        <button class="btn btn-sm btn-primary" data-cameraid="{{ camera.cameraid }}">Re-Deploy</button>
+                        <button class="btn btn-sm btn-warning" data-cameraid="{{ camera.cameraid }}">Restart</button>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scriptcustom %}
+<!-- custom scripts -->
+<script src="/static/js/setting/camera.js"></script>
+{% endblock %}

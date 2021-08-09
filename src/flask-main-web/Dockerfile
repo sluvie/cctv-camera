@@ -1,6 +1,6 @@
 FROM python:3.8
 
-RUN pip install flask jinja2 psycopg2-binary
+RUN pip install flask jinja2 psycopg2-binary docker six
 
 EXPOSE 3001
 

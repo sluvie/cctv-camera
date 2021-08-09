@@ -9,15 +9,13 @@ $(".btn_onoff").click(function() {
     // mybutton
     mybutton = $(this);
 
-    camera_str = $(this).data("camera");
-    camera_str = camera_str.replace(/\'/g, '"');
-    // parse to json
-    camera = JSON.parse(camera_str);
-    camera.onoff = (camera.onoff == 0 ? 1 : 0);
+    cameraid = $(this).data("cameraid");
+    cameraonoff = $(this).data("cameraonoff");
+    cameraonoff = (cameraonoff == 0 ? 1 : 0);
 
     var data = {
-        "cameraid": camera.cameraid,
-        "onoff": camera.onoff
+        "cameraid": cameraid,
+        "onoff": cameraonoff
     };
 
     $.LoadingOverlay("show");
@@ -34,7 +32,7 @@ $(".btn_onoff").click(function() {
         success: function (data) {
             if (data.success) {
                 if (data.success == "1") {
-                    if (camera.onoff == 1) {
+                    if (cameraonoff == 1) {
                         mybutton.text('オフ');
                         mybutton.removeClass("btn-success");
                         mybutton.addClass("btn-danger");

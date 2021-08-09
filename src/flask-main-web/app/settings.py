@@ -1,6 +1,11 @@
 from os.path import join, dirname, realpath
 
-UPLOADS_PATH = join(dirname(realpath(__file__)), 'static/uploads/')
+
+DOWNLOADS_PATH = join(dirname(realpath(__file__)), 'downloads/')
+UPLOADS_PATH = join(dirname(realpath(__file__)), 'uploads/')
+UPLOADS_IMAGES_PATH = join(dirname(realpath(__file__)), 'uploads/images/')
+UPLOADS_VIDEOS_PATH = join(dirname(realpath(__file__)), 'uploads/videos/')
+
 
 DATABASE_CONFIG = {
     "host": "localhost",

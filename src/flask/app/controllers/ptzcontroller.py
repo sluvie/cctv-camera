@@ -48,7 +48,7 @@ lock = threading.Lock()
 # import video camera
 from app.libraries.recording import VideoCamera
 
-video_camera = None
+video_camera = VideoCamera()
 global_frame = None
 
 # CAMERA FUNCTION

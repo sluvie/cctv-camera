@@ -70,7 +70,12 @@ ADD COLUMN placename character varying NOT NULL DEFAULT '';
 ALTER TABLE public.t_camera
 ADD COLUMN positionorder integer NOT NULL DEFAULT 1;
 
+-- effective date
+ALTER TABLE public.t_camera
+ADD COLUMN startdate timestamp NOT NULL DEFAULT now();
 
+ALTER TABLE public.t_camera
+ADD COLUMN enddate timestamp NOT NULL DEFAULT now();
 
 -- CAMERA POSITION
 
@@ -82,10 +87,10 @@ CREATE TABLE public.t_camera_position
     cameraid uuid NOT NULL,
     created timestamp NOT NULL DEFAULT now(),
     createby character varying,
-    PRIMARY KEY (camerapositionid),
-    CONSTRAINT fk_camera_position
-        FOREIGN KEY(cameraid)
-            REFERENCES t_camera(cameraid)
+    PRIMARY KEY (camerapositionid)
+    --CONSTRAINT fk_camera_position
+    --    FOREIGN KEY(cameraid)
+    --        REFERENCES t_camera(cameraid)
 )
 
 TABLESPACE pg_default;
@@ -95,6 +100,41 @@ ALTER TABLE public.t_camera_position
 
 COMMENT ON TABLE public.t_camera_position
     IS 'list of camera position';
+
+
+
+
+-- SETTING
+
+CREATE TABLE public.t_setting
+(
+    settingid uuid NOT NULL DEFAULT gen_random_uuid(),
+    keytag1 character varying NOT NULL,
+    keytag2 character varying NOT NULL,
+    tag1 character varying NOT NULL DEFAULT '',
+    tag2 character varying NOT NULL DEFAULT '',
+    tag3 character varying NOT NULL DEFAULT '',
+    tag4 character varying NOT NULL DEFAULT '',
+    tag5 character varying NOT NULL DEFAULT '',
+    created timestamp NOT NULL DEFAULT now(),
+    createby character varying,
+    PRIMARY KEY (settingid)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public.setting
+    OWNER to camera;
+
+COMMENT ON TABLE public.t_setting
+    IS 'setting';
+
+
+
+
+
+
+-- NOT USED
 
 
 -- CAMERA POSITION PICTURE
