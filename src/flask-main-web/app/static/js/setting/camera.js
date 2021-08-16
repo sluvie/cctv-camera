@@ -3,8 +3,18 @@ $(document).ready(function () {
     $('#tbl-main').DataTable({
         dom: 'Bfrtip',
         buttons: [
-            'copy', 'csv', 'excel', 'pdf', 'print'
-        ]
+            'copy', 
+            {
+                extend: 'excelHtml5',
+                text : 'Export to Excel',
+                filename: function(){
+                                var d = new Date();
+                                var n = d.getTime();
+                                return 'excel-' + n;
+                            },
+            }
+        ],
+        "scrollX": true
     });
 })
 
@@ -21,6 +31,9 @@ $("#btn_savecamera").click(function() {
         "ip": $("#ip").val(),
         "port": $("#port").val(),
         "rtspport": $("#rtsp-port").val(),
+		"serverid": $("#serverid").val(),
+		"servername": $("#serverid").find(':selected').data("servername"),
+		"serverport": $("#serverid").find(':selected').data("serverport"),
         "username": $("#username").val(),
         "password": $("#password").val()
     };
@@ -36,9 +49,9 @@ $("#btn_savecamera").click(function() {
             Swal.fire("Error", '', 'error')
         },
         success: function (data) {
+            $.LoadingOverlay("hide");
             if (data.success) {
                 if (data.success == "1") {
-                    $.LoadingOverlay("hide");
                     location.reload();
                 } else {
                     Swal.fire(data.message, '', 'error')
@@ -46,7 +59,6 @@ $("#btn_savecamera").click(function() {
             } else {
                 Swal.fire('Failed to add camera', '', 'error')
             }
-            $.LoadingOverlay("hide");
         }
     });
 });
@@ -146,7 +158,41 @@ $("#btn_deletecamera").click(function() {
 });
 
 
-$(".btn_infoeditcamera").click(function () {
+$(document).on("click", ".btn-turnonoffserver", function(){
+    
+    var servername = $(this).data("servername");
+    var onoff = $(this).data("onoff");
+    var params = {
+        "servername": servername,
+        "execute": onoff
+    };
+    $.LoadingOverlay("show");
+    $.ajax({
+        type: "POST",
+        url: url_serveronoff_camera,
+        data: JSON.stringify(params),
+        contentType: 'application/json',
+        dataType: 'json',
+        error: function () {
+            Swal.fire("Error", '', 'error');
+        },
+        success: function (data) {
+            $.LoadingOverlay("hide");
+            if (data.success) {
+                if (data.success == "1") {
+                    location.reload();
+                } else {
+                    Swal.fire(data.message, '', 'error');
+                }
+            } else {
+                Swal.fire("Failed to turn on / off server", '', 'error');
+            }
+        }
+    });
+});
+
+
+$(document).on("click", ".btn_infoeditcamera", function(){
     console.log("info edit camera.")
 
     var cameraid = $(this).data("cameraid");
@@ -171,8 +217,8 @@ $(".btn_infoeditcamera").click(function () {
                     $("#edit_companyname").val(camera.companyname);
                     $("#edit_placename").val(camera.placename);
                     $("#edit_positionorder").val(camera.positionorder);
-                    $("#edit_startdate").val(camera.startdate);
-                    $("#edit_enddate").val(camera.enddate);
+                    $("#edit_startdate").val($.date(new Date(camera.startdate)));
+                    $("#edit_enddate").val($.date(new Date(camera.enddate)));
                     $("#edit_ip").val(camera.ip);
                     $("#edit_port").val(camera.webport);
                     $("#edit_rtsp-port").val(camera.rtspport);

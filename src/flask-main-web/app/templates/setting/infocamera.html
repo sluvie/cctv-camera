@@ -68,6 +68,9 @@
         </div>
 
         <hr />
+		
+		{{ camera }}
+		{{ docker }}
 
         <h2>Server Settings</h2>
         <div class="m-3">
@@ -88,17 +91,17 @@
                     <div class="col-12 pt-2 pb-2">
                         <div class="row">
                             <div class="col-4">ID</div>
-                            <div class="col-8"><span id="label_detail_serverid"></span></div>
+                            <div class="col-8"><span id="label_detail_serverid">{{ camera.dockerid }}</span></div>
                         </div>
 
                         <div class="row">
                             <div class="col-4">Server Name</div>
-                            <div class="col-8"><span id="label_detail_servername"></span></div>
+                            <div class="col-8"><span id="label_detail_servername">{{ camera.dockername }}</span></div>
                         </div>
 
                         <div class="row">
                             <div class="col-4">Port</div>
-                            <div class="col-8"><span id="label_detail_serverport"></span></div>
+                            <div class="col-8"><span id="label_detail_serverport">{{ camera.dockerport }}</span></div>
                         </div>
 
                         <div class="row">

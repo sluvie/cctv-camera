@@ -2,16 +2,22 @@ from flask import (
     render_template, 
     g,
     request,
+    session,
     redirect,
     url_for)
 from app import app
 
 # execute bash
 import subprocess
+import os
+import sys
 
 # database
 from app.models.camera import Camera_m
 from app.models.setting import Setting_m
+
+# docker
+from app.libraries.docker_util import DockerUtil
 
 # libraries
 from app.libraries.docker_util import DockerUtil
@@ -24,18 +30,37 @@ def settingcamera():
 
     camera_m = Camera_m()
     cameras = camera_m.list()
-    return render_template('/setting/camera.html', title="CMS - Setting Camera", description="", cameras=cameras)
+    cameras = [] if cameras == None else cameras
+
+    # user session
+    user_session = g.user
+    sessionid = session['sessionid']
+    
+    # get status docker
+    try:
+        dockerutil = DockerUtil()
+        for row in cameras:
+            status = dockerutil.container_status(row['dockername'])
+            row["dockerstatus"] = 1 if status else 0
+    except:
+        print("there is no docker")
+
+    return render_template('/setting/camera.html', title="CMS - Setting Camera", description="", cameras=cameras, user_session=user_session, sessionid=sessionid)
 
 
 @app.route('/setting/infocamera/<uuid:cameraid>', methods = ['GET'])
 def informationcamera(cameraid):
     # auth page
-    #if not g.user:
-    #        return redirect(url_for('login'))
+    if not g.user:
+            return redirect(url_for('login'))
 
     camera_m = Camera_m()
     result, message = camera_m.readone(cameraid)
-    return render_template('/setting/infocamera.html', title="CMS - Information Camera", description="", camera=result)
+    docker = None
+
+    return render_template('/setting/infocamera.html', title="CMS - Information Camera", description="", 
+        camera=result,
+        docker=docker)
 
 
 @app.route('/setting/readone', methods = ['POST'])
@@ -64,7 +89,7 @@ def camera_docker():
     result = None
     return {
             "success": "1" if result else "0",
-            "message": message,
+            "message": "",
             "data": result
     }
 
@@ -77,7 +102,9 @@ def addcamera():
 
     data = request.json
     camera_m = Camera_m()
-    result, message = camera_m.insert(data["companyname"], data["placename"], data["positionorder"], data["startdate"], data["enddate"], data["ip"], data["port"], data["rtspport"], data["username"], data["password"], "suli")
+    result, message = camera_m.insert(data["companyname"], data["placename"], data["positionorder"], data["startdate"], data["enddate"], 
+        data["ip"], data["port"], data["rtspport"], data["serverid"], data["servername"], data["serverport"], 
+        data["username"], data["password"], "suli")
     return {
         "success": "1" if result else "0",
         "message": message
@@ -129,11 +156,36 @@ def updatecamera_onoff():
     }
 
 
+@app.route("/setting/serveronoff", methods = ['POST'])
+def serveronffcamera():
+    # auth page
+    if not g.user:
+        return redirect(url_for('login'))
+            
+    data = request.json
+    servername = data["servername"]
+    execute = data["execute"]
+
+    script_execute = ""
+    if execute == 1:
+        script_execute = "docker start " + servername
+    if execute == 0:
+        script_execute = "docker stop " + servername
+    
+    # call script
+    os.system(script_execute)
+    
+    return {
+        "success": "1",
+        "message": ""
+    }
+
+
 @app.route("/setting/generatecamera", methods = ['POST'])
 def generatecamera():
     # auth page
-    #if not g.user:
-    #        return redirect(url_for('login'))
+    if not g.user:
+            return redirect(url_for('login'))
             
     data = request.json
     cameraid = data["cameraid"]
@@ -165,7 +217,8 @@ def generatecamera():
 
     
     # copy the master to folder port
-    
+    # duplicate the original to new application
+    # subprocess.call('/home/sluvie/works/japan/cctv-camera/src/camera-docker/update.sh') 
 
 
     # prepare the config and server port

@@ -5,6 +5,11 @@ $(document).ready(function () {
     $("#btn_recordvideo").prop('disabled', false);  
 })
 
+
+
+
+/* navigation camera */
+
 $("#btn_left").click(function () {
     console.log("left");
     $.get("/ptz/left/5", function (data) {
@@ -41,6 +46,22 @@ $("#btn_stop").click(function () {
 });
 
 /* MOVE BASED DEGREE */
+
+$(document).on("click", ".btn-input-up", function(){
+    console.log("input up");
+    var input_comp = $(this).data("compid");
+    var value = parseFloat($("#" + input_comp).val());
+    value = value + 0.5;
+    $("#" + input_comp).val(value);
+});
+
+$(document).on("click", ".btn-input-down", function(){
+    console.log("input down");
+    var input_comp = $(this).data("compid");
+    var value = parseFloat($("#" + input_comp).val());
+    value = value - 0.5;
+    $("#" + input_comp).val(value);
+});
 
 $("#btn_left_degree").click(function () {
     console.log("left degree");

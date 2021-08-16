@@ -5,28 +5,25 @@
     <div id="camera_list">
         <div class="row text-center">
             {% for row in cameras %}
+            {% if row.dockerstatus == 1 %}
             <div class="col-4">
                 <div class="row p-1 m-2 bg-light">
 
                     <div class="col-12 mt-2">
-                        <span>{{ row.companyname }} - {{ row.placename }}</span>
+                        <span>{{ row.positionorder }}. {{ row.companyname }} - {{ row.placename }}</span>
                     </div>
                     <div class="col-12 mt-2">
                         {% if row.onoff == 0 %}
                         <img src="/static/img/no-cctv-320.png" width="240px" height="200px" id="img_camera_{{ row.cameraid }}" />
                         {% else %}
-                        <img src="http://153.126.161.130/{{ row.dockername }}/ptz/video_feed" width="240px" height="200px" id="img_camera_{{ row.cameraid }}" />
+                        <img src="http://{{ baseurl }}/{{ row.dockername }}/ptz/video_feed" width="240px" height="200px" id="img_camera_{{ row.cameraid }}" />
                         {% endif %}
                     </div>
+                    {% if user_session.isadmin == 1 %}
                     <div class="col-12 mt-2">
                         <span>{{ row.ip }}</span>
                     </div>
-                    <div class="col-12 mt-2">
-                        <span>{{ row.cameraid }}</span>
-                    </div>
-                    <div class="col-12 mt-2">
-                        <span>Camera-{{ row.positionorder }}</span>
-                    </div>
+                    {% endif %}
                     <div class="col-12 mt-2">
                         <div class="row">
                             <div class="input-group input-group-lg">
@@ -38,13 +35,14 @@
                                     {% endif %}
                                 </div>
                                 <div class="col">
-                                    <a class="btn btn-dark" style="width:100%;" href="http://153.126.161.130/{{ row.dockername }}/ptz/control"><i class="fas fa-eye"></i> コントロール</a>
+                                    <a class="btn btn-dark" style="width:100%;" href="http://{{ baseurl }}/{{ row.dockername }}/{{ sessionid }}"><i class="fas fa-eye"></i> コントロール</a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>                
             </div>
+            {% endif %}
             {% endfor %}
         </div>
     </div>

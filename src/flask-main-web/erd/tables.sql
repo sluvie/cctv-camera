@@ -5,7 +5,7 @@ CREATE EXTENSION pgcrypto;
 
 CREATE TABLE public.t_user
 (
-    userid uuid NOT NULL DEFAULT gen_random_uuid(),
+    userid  uuid not null default gen_random_uuid(),
     username character varying NOT NULL,
     password character varying NOT NULL,
     name character varying NOT NULL,
@@ -25,6 +25,27 @@ ALTER TABLE public.t_user
 
 COMMENT ON TABLE public.t_user
     IS 'list of user that can be access to the main website';
+	
+
+CREATE TABLE public.t_user_session
+(
+    	sessionid uuid NOT NULL DEFAULT gen_random_uuid(),
+		userid uuid NOT NULL,
+    	username character varying NOT NULL,
+	    created timestamp NOT NULL DEFAULT now(),
+		createby character varying,
+    	updated timestamp,
+    	updateby character varying,
+    	PRIMARY KEY (sessionid)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public.t_user_session
+    OWNER to camera;
+
+COMMENT ON TABLE public.t_user_session
+    IS 'list of user session';
 
 
 -- CAMERA

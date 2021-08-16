@@ -24,26 +24,9 @@
                     <div class="form-group">
                         <label for="edit_positionorder" class="col-form-label">Position Order:</label>
                         <select id="edit_positionorder" class="form-control">
-                            <option value="1">Camera 01</option>
-                            <option value="2">Camera 02</option>
-                            <option value="3">Camera 03</option>
-                            <option value="4">Camera 04</option>
-                            <option value="5">Camera 05</option>
-                            <option value="6">Camera 06</option>
-                            <option value="7">Camera 07</option>
-                            <option value="8">Camera 08</option>
-                            <option value="9">Camera 09</option>
-                            <option value="10">Camera 10</option>
-                            <option value="11">Camera 11</option>
-                            <option value="12">Camera 12</option>
-                            <option value="13">Camera 13</option>
-                            <option value="14">Camera 14</option>
-                            <option value="15">Camera 15</option>
-                            <option value="16">Camera 16</option>
-                            <option value="17">Camera 17</option>
-                            <option value="18">Camera 18</option>
-                            <option value="19">Camera 19</option>
-                            <option value="20">Camera 20</option>
+                            {% for row in cameras %}
+                            <option value="{{ loop.index }}">{{ loop.index }}</option>
+                            {% endfor %}
                         </select>
                     </div>
 
@@ -97,7 +80,9 @@
             <div class="modal-footer d-flex justify-content-center">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
                 <button type="button" class="btn btn-primary" id="btn_editcamera" data-cameraid="">保存</button>
+                <!--
                 <button type="button" class="btn btn-danger" id="btn_deletecamera" data-cameraid="">Delete</button>
+                -->
             </div>
         </div>
     </div>

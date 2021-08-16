@@ -3,8 +3,21 @@ $(document).ready(function () {
     $('#tbl-main').DataTable({
         dom: 'Bfrtip',
         buttons: [
-            'copy', 'csv', 'excel', 'pdf', 'print'
-        ]
+            'copy', 
+            {
+                extend: 'excelHtml5',
+                text : 'Export to Excel',
+                filename: function(){
+                                var d = new Date();
+                                var n = d.getTime();
+                                return 'excel-' + n;
+                            },
+            }
+        ],
+		rowReorder: {
+        	selector: 'td:nth-child(2)'
+        },
+        responsive: true
     });
 });
 

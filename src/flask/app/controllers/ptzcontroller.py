@@ -1,6 +1,7 @@
 from flask import (
     render_template, 
     send_file,
+    session,
     g,
     request,
     Response,
@@ -25,22 +26,37 @@ from bs4 import BeautifulSoup
 
 # setting
 from app.settings import UPLOADS_IMAGES_PATH
-from app.settings import UPLOADS_VIDEOS_PATH
 from app.settings import DOWNLOADS_PATH
 
 # database
+from app.models.camera import Camera_m
 from app.models.cameraposition import CameraPosition_m
-from app.models.camerasnapshot import CameraSnapshot_m
+from app.models.setting import Setting_m
 
 # config
 config = configparser.ConfigParser()
 config.readfp(open(r'app/config.ini'))
 
-ipaddress = config.get('CAMERA', 'ipaddress')
-port = config.get('CAMERA', 'port')
-username = config.get('CAMERA', 'username')
-password = config.get('CAMERA', 'password')
-cameraid = config.get('CAMERA', 'cameraid')
+dockername = config.get('CAMERA', 'dockerserver')
+# get from database
+camera_m = Camera_m()
+camera_data, message_result = camera_m.readone_docker(dockername)
+print(dockername)
+print(camera_data)
+title = ""
+ipaddress = ""
+port = ""
+username = ""
+password = ""
+cameraid = ""
+if camera_data:
+    title = "{}. {}-{}".format(camera_data["positionorder"], camera_data["companyname"], camera_data["placename"])
+    ipaddress = camera_data["ip"]
+    port = camera_data["webport"]
+    rtspport = camera_data["rtspport"]
+    username = camera_data["username"]
+    password = camera_data["password"]
+    cameraid = camera_data["cameraid"]
 
 # tools camera
 lock = threading.Lock()
@@ -50,6 +66,21 @@ from app.libraries.recording import VideoCamera
 
 video_camera = VideoCamera()
 global_frame = None
+
+
+'''
+TODO:
+update the session database every 10 minutes
+'''
+@app.before_request
+def before_request():
+        g.user = None
+        if 'user' in session:
+            # find user based on userid, update information user
+            user = session['user']
+            sessionid = session['sessionid']
+            g.user = user
+
 
 # CAMERA FUNCTION
 def video_stream():
@@ -265,13 +296,25 @@ def ptz_removepreset(number: str):
 # main web
 @app.route('/ptz/control', methods = ['GET'])
 def ptz_control():
-    global ipaddress, port, username
-    
+    global ipaddress, port, username, title
+
+    # auth page
+    if not g.user:
+            return redirect(url_for('error'))
+
+    # get base url
+    setting_m = Setting_m()
+    data_baseurl, message = setting_m.readone_keytag("SERVER", "BASEURL")
+    baseurl = "/"
+    if (data_baseurl):
+            baseurl = data_baseurl["tag1"]
+
     return render_template(
         'ptz/control.html', 
-        title=ipaddress,
+        title=title,
         ip=ipaddress,
         port=port,
+        baseurl=baseurl, 
         description="")
 
 # save position
@@ -346,18 +389,30 @@ def record_status():
         return jsonify(result="stopped")
 
 
+
+
+
+
+
+
+
+
+
+
+
 # gallery
 @app.route('/ptz/gallery')
 def ptz_gallery():
     global ipaddress, cameraid
 
-    galleries, message = snapshot_m.list(cameraid)
+    #galleries, message = snapshot_m.list(cameraid)
 
     return render_template(
         'ptz/gallery.html', 
         title=ipaddress,
         description="",
-        galleries=galleries)
+        #galleries=galleries
+        )
 
 
 @app.route('/ptz/thumbnail/<path:filename>')
@@ -385,6 +440,13 @@ def get_url_paths(url, username, password, ext='', params={}):
 @app.route('/ptz/sdcard/<path>/<isfile>')
 def ptz_sdcard(path=None,isfile=0):
     global ipaddress, port, username, password
+
+    # get base url
+    setting_m = Setting_m()
+    data_baseurl, message = setting_m.readone_keytag("SERVER", "BASEURL")
+    baseurl = "/"
+    if (data_baseurl):
+            baseurl = data_baseurl["tag1"]
 
 
     # absolutely download file
@@ -457,5 +519,6 @@ def ptz_sdcard(path=None,isfile=0):
         return render_template(
             'ptz/sdcard.html', 
             title=ipaddress,
+            baseurl=baseurl,
             description="",
             sdcard=sdcard)

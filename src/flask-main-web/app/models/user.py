@@ -1,4 +1,5 @@
 import psycopg2
+import psycopg2.extras
 from app.settings import DATABASE_CONFIG
 
 class User_m:
@@ -10,6 +11,8 @@ class User_m:
             database=DATABASE_CONFIG["database"],
             user=DATABASE_CONFIG["user"],
             password=DATABASE_CONFIG["password"])
+
+        psycopg2.extras.register_uuid()
 
     
     def list(self, deleteflag=0):
@@ -78,6 +81,21 @@ class User_m:
             return None
 
 
+    def get_sessionid(self, username, deleteflag=0):
+        try:
+            cur = self.conn.cursor()
+            query = "select sessionid from t_user_session where username=%s order by created desc limit 1"
+            cur.execute(query, (username, ))
+            row = cur.fetchone()
+            if row == None:
+                return None
+            else:
+                result = row[0]
+                return result
+        except psycopg2.Error as e:
+            return None
+
+
     def insert(self, username, password, name, isadmin, createby):
         try:
             cur = self.conn.cursor()
@@ -105,6 +123,26 @@ class User_m:
             cur = self.conn.cursor()
             query = "update t_user set deleteflag=1, updated=now(), updateby=%s where userid=%s"
             cur.execute(query, (updateby, userid, ))
+            self.conn.commit()
+            return True, ""
+        except psycopg2.Error as e:
+            return False, str(e)
+
+    def create_session(self, userid, username):
+        try:
+            cur = self.conn.cursor()
+            query = "insert into t_user_session(sessionid, userid, username, createby) values (default, %s, %s, %s)"
+            cur.execute(query, (userid, username, username, ))
+            self.conn.commit()
+            return True, ""
+        except psycopg2.Error as e:
+            return False, str(e)
+
+    def update_session(self, sessionid):
+        try:
+            cur = self.conn.cursor()
+            query = "update t_user_session set updated=now() where sessionid=%s"
+            cur.execute(query, (sessionid, ))
             self.conn.commit()
             return True, ""
         except psycopg2.Error as e:

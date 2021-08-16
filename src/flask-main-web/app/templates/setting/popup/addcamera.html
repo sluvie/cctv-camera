@@ -82,6 +82,15 @@
                         <label for="rtsp-port" class="col-form-label">RTSP Port:</label>
                         <input type="text" class="form-control" id="rtsp-port">
                     </div>
+					
+                    <div class="form-group">
+                        <label for="serverid" class="col-form-label">Server:</label>
+                        <select id="serverid" class="form-control">
+							{% for row in dockers %}
+                            <option value="{{ row.tag1 }}" data-servername="{{ row.tag2 }}" data-serverport="{{ row.tag3 }}">{{ row.tag2 }}</option>
+							{% endfor %}
+                        </select>
+                    </div>
 
                     <div class="form-group">
                         <label for="username" class="col-form-label">Username:</label>

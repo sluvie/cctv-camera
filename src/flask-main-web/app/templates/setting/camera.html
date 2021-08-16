@@ -10,35 +10,47 @@
                 <h1>Camera</h1>
             </div>
             <div class="col-4 text-right">
+                <!--
                 <button class="btn btn-dark" data-toggle="modal" data-target="#addcameraModal"><i class="fas fa-plus"></i> add camera</button>
+                -->
             </div>
         </div>
 
         <table id="tbl-main" class="table table-striped table-bordered" style="width:100%">
             <thead>
                 <tr>
+                    <th></th>
+                    <th></th>
+                    <th>Server</th>
+                    <th>Order</th>
                     <th>会社名</th>
                     <th>現場名</th>
-                    <th>Camera (Mapping)</th>
                     <th>Ip</th>
-                    <th>Port</th>
-                    <th>RTSP Port</th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for row in cameras %}
                 <tr>
-                    <td>{{ row.companyname }}</td>
-                    <td>{{ row.placename }}</td>
-                    <td>Camera-{{ row.positionorder }}</td>
-                    <td>{{ row.ip }}</td>
-                    <td>{{ row.webport }}</td>
-                    <td>{{ row.rtspport }}</td>
+                    {% if row.dockerstatus == 0 %}
+                    <td>
+                        <button class="btn btn-danger btn-turnonoffserver" data-servername="{{ row.dockername }}" data-onoff="1">OFF</button>
+                    </td>
+                    {% else %}
+                    <td>
+                        <button class="btn btn-success btn-turnonoffserver" data-servername="{{ row.dockername }}" data-onoff="0">ON</button>
+                    </td>
+                    {% endif %}
                     <td class="text-center">
                         <button class="btn btn-warning btn_infoeditcamera" data-cameraid="{{ row.cameraid }}"><i class="fas fa-edit"></i> edit</button>
+                        <!--
                         <a href="/setting/infocamera/{{ row.cameraid }}" class="btn btn-info btn_infocamera" data-cameraid="{{ row.cameraid }}"><i class="fas fa-info-circle"></i> info</a>
+                        -->
                     </td>
+                    <td>{{ row.dockername }}</td>
+                    <td>{{ row.positionorder }}</td>
+                    <td>{{ row.companyname }}</td>
+                    <td>{{ row.placename }}</td>
+                    <td>{{ row.ip }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -47,9 +59,7 @@
 </div>
 {% endblock %}
 
-{% include 'setting/popup/addcamera.html' %}
 {% include 'setting/popup/editcamera.html' %}
-{% include 'setting/popup/detailcamera.html' %}
 
 {% block scriptcustom %}
 <!-- custom scripts -->

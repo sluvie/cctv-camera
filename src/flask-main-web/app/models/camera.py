@@ -41,7 +41,8 @@ class Camera_m:
                         'placename': row[11],
                         'positionorder': row[12],
                         'startdate': row[13],
-                        'enddate': row[14]
+                        'enddate': row[14],
+                        'dockerstatus': 0
                     }
                     result.append(row)
                 return result
@@ -73,19 +74,20 @@ class Camera_m:
                         'placename': row[11],
                         'positionorder': row[12],
                         'startdate': row[13],
-                        'enddate': row[14]
+                        'enddate': row[14],
+                        'dockerstatus': 0
                     }
                 return result, ""
         except psycopg2.Error as e:
             return None, str(e)
 
 
-    def insert(self, companyname, placename, positionorder, startdate, enddate, ip, port, rtspport, username, password, createby):
+    def insert(self, companyname, placename, positionorder, startdate, enddate, ip, port, rtspport, serverid, servername, serverport, username, password, createby):
         try:
             cur = self.conn.cursor()
-            query = "insert into t_camera(cameraid, companyname, placename, positionorder, startdate, enddate, ip, webport, rtspport, username, password, createby) " \
-                "values (default, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            cur.execute(query, (companyname, placename, positionorder, startdate, enddate, ip, port, rtspport, username, password, createby, ))
+            query = "insert into t_camera(cameraid, companyname, placename, positionorder, startdate, enddate, ip, webport, rtspport, dockerid, dockername, dockerport, username, password, createby) " \
+                "values (default, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            cur.execute(query, (companyname, placename, positionorder, startdate, enddate, ip, port, rtspport, serverid, servername, serverport, username, password, createby, ))
             self.conn.commit()
             return True, ""
         except psycopg2.Error as e:

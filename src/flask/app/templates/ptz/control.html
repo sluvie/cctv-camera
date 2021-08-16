@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container">
-    <h3 class="col-12 mt-5">Live Streaming {{ title }}</h3>
+    <h3 class="col-12 mt-3 mb-3">{{ title }}</h3>
     <div class="row">
         <div class="col-9">
             <!--
@@ -42,30 +42,54 @@
             <hr />
             <div class="row">
                 <div class="col-12 text-center">
-                    <span>move based on degree:</span>
+                    <span>角度指定</span>
                 </div>                
                 <div class="col-12">
                     <div class="row mt-2">
                         <div class="input-group input-group-lg">
-                            <div class="col-md-6"><input class="form-control input-lg" id="tx_left_degree" type="text" value="30" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');" /></div>
+                            <div class="col-md-6">
+                                <div class="row text-center" style="margin-left: 1px; margin-right: 1px;">
+                                    <input class="col-md-6 form-control input-lg" id="tx_left_degree" type="text" value="0.5" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');" readonly/>
+                                    <button class="col-md-3 btn btn-light btn-input-up" data-compid="tx_left_degree"><i class="fas fa-arrow-circle-up"></i> </button>
+                                    <button class="col-md-3 btn btn-light btn-input-down" data-compid="tx_left_degree"><i class="fas fa-arrow-circle-down"></i> </button>
+                                </div>
+                            </div>
                             <div class="col-md-6 text-center"><button class="btn btn-dark" style="width:100%;" id="btn_left_degree"><i class="fas fa-arrow-circle-left"></i></button></div>
                         </div>
                     </div>
                     <div class="row mt-2">
                         <div class="input-group input-group-lg">
-                            <div class="col-md-6"><input class="form-control input-lg" id="tx_right_degree" type="text" value="30" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');" /></div>
+                            <div class="col-md-6">
+                                <div class="row text-center" style="margin-left: 1px; margin-right: 1px;">
+                                    <input class="col-md-6 form-control input-lg" id="tx_right_degree" type="text" value="0.5" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');" readonly/>
+                                    <button class="col-md-3 btn btn-light btn-input-up" data-compid="tx_right_degree"><i class="fas fa-arrow-circle-up"></i> </button>
+                                    <button class="col-md-3 btn btn-light btn-input-down" data-compid="tx_right_degree"><i class="fas fa-arrow-circle-down"></i> </button>
+                                </div>
+                            </div>
                             <div class="col-md-6 text-center"><button class="btn btn-dark" style="width:100%;" id="btn_right_degree"><i class="fas fa-arrow-circle-right"></i></button></div>
                         </div>
                     </div>
                     <div class="row mt-2">
                         <div class="input-group input-group-lg">
-                            <div class="col-md-6"><input class="form-control input-lg" id="tx_up_degree" type="text" value="30" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');" /></div>
+                            <div class="col-md-6">
+                                <div class="row text-center" style="margin-left: 1px; margin-right: 1px;">
+                                    <input class="col-md-6 form-control input-lg" id="tx_up_degree" type="text" value="0.5" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');" readonly/>
+                                    <button class="col-md-3 btn btn-light btn-input-up" data-compid="tx_up_degree"><i class="fas fa-arrow-circle-up"></i> </button>
+                                    <button class="col-md-3 btn btn-light btn-input-down" data-compid="tx_up_degree"><i class="fas fa-arrow-circle-down"></i> </button>
+                                </div>
+                            </div>
                             <div class="col-md-6 text-center"><button class="btn btn-dark" style="width:100%;" id="btn_up_degree"><i class="fas fa-arrow-circle-up"></i></button></div>
                         </div>
                     </div>
                     <div class="row mt-2">
                         <div class="input-group input-group-lg">
-                            <div class="col-md-6"><input class="form-control input-lg" id="tx_down_degree" type="text" value="30" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');" /></div>
+                            <div class="col-md-6">
+                                <div class="row text-center" style="margin-left: 1px; margin-right: 1px;">
+                                    <input class="col-md-6 form-control input-lg" id="tx_down_degree" type="text" value="0.5" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');" readonly/>
+                                    <button class="col-md-3 btn btn-light btn-input-up" data-compid="tx_down_degree"><i class="fas fa-arrow-circle-up"></i> </button>
+                                    <button class="col-md-3 btn btn-light btn-input-down" data-compid="tx_down_degree"><i class="fas fa-arrow-circle-down"></i> </button>
+                                </div>
+                            </div>
                             <div class="col-md-6 text-center"><button class="btn btn-dark" style="width:100%;" id="btn_down_degree"><i class="fas fa-arrow-circle-down"></i></button></div>
                         </div>
                     </div>
@@ -74,24 +98,24 @@
             <hr />
             <div class="row">
                 <div class="col-6 text-center">
-                    <button class="btn btn-primary" style="width:100%;" id="btn_showsaveposition"><i class="fas fa-save"></i> カメラ位置保存</button> <!-- save position form -->
+                    <button class="btn btn-primary" style="width:100%;" id="btn_showsaveposition"><i class="fas fa-save"></i> <font size="0.6em">カメラ位置保存</font></button> <!-- save position form -->
                 </div>
                 <div class="col-6 text-center">
-                    <button class="btn btn-success" style="width:100%;" id="btn_showloadposition"><i class="fas fa-info"></i> カメラ位置呼出</button> <!-- show position list -->
+                    <button class="btn btn-success" style="width:100%;" id="btn_showloadposition"><i class="fas fa-info"></i> <font size="0.6em">カメラ位置呼出</font></button> <!-- show position list -->
                 </div>
             </div>
             <hr />
             <div class="row mt-2">
                 <div class="col-12 text-center">
-                    <button class="btn btn-dark" style="width:100%;" id="btn_captureimage"><i class="fas fa-camera"></i> picture</button>
+                    <button class="btn btn-dark" style="width:100%;" id="btn_captureimage"><i class="fas fa-camera"></i> 画像キャプチャー</button>
                 </div>
             </div>
             <div class="row mt-2">
                 <div class="col-6 text-center">
-                    <button class="btn btn-dark" style="width:100%;" id="btn_recordvideo"><i class="fas fa-video"></i> record</button>
+                    <button class="btn btn-dark" style="width:100%;" id="btn_recordvideo"><i class="fas fa-video"></i> 録画</button>
                 </div>
                 <div class="col-6 text-center">
-                    <button class="btn btn-dark" style="width:100%;" id="btn_stopvideo"><i class="fas fa-stop-circle"></i> stop</button>
+                    <button class="btn btn-dark" style="width:100%;" id="btn_stopvideo"><i class="fas fa-stop-circle"></i> 停止</button>
                 </div>
             </div>
         </div>

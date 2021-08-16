@@ -5,6 +5,7 @@ var url_edit_camera = "/setting/editcamera";
 var url_delete_camera = "/setting/deletecamera";
 var url_update_camera_onoff = "/setting/updatecameraonoff";
 var url_generate_camera = "/setting/generatecamera";
+var url_serveronoff_camera = "/setting/serveronoff";
 
 // user
 var url_readone_user = "/user/readone";

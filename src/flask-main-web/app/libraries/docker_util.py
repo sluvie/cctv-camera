@@ -6,12 +6,13 @@ class DockerUtil:
     def __init__(self) -> None:
         self.client = docker.from_env()
 
+    def containers(self, filters="*"):
+        return self.client.containers.list(all=True, filters=filters)
 
-    def containers(self):
-        return self.client.containers.list(all=True)
-
-
-
+    def container_status(self, container_name):
+        container = self.client.containers.get(container_name)
+        container_state = container.attrs['State']
+        return container_state['Status'] == 'running'
 
 
 # same result with below line

@@ -2,6 +2,7 @@ from flask import (
     render_template, 
     g,
     request,
+    session,
     redirect,
     url_for)
 from app import app
@@ -17,7 +18,13 @@ def browseuser():
 
     user_m = User_m()
     users = user_m.list()
-    return render_template('/user/user.html', title="CMS - User", description="", users=users)
+    users = [] if users == None else users
+
+    # user session
+    user_session = g.user
+    sessionid = session['sessionid']
+
+    return render_template('/user/user.html', title="CMS - User", description="", users=users, user_session=user_session, sessionid=sessionid)
 
 
 @app.route('/user/readone', methods = ['POST'])
