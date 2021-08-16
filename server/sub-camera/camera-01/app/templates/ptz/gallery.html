@@ -1,0 +1,30 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+    <h3 class="col-12 mt-5">Gallery {{ title }}</h3>
+    <div class="row text-center">
+
+        {% for row in galleries %}
+        <div class="col">
+            <div class="row mt-5">
+                <div class="col-12">
+                    <img src="/ptz/thumbnail/{{ row.snapshotfilename }}">
+                </div>
+                <div class="col-12 mt-2">
+                    <a class="btn btn-info" href="/ptz/download/{{ row.snapshotfilename }}" download="{{ row.snapshotfilename }}">Download</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scriptcustom %}
+<!-- custom scripts -->
+<!--
+<script src="/static/js/ptz/gallery.js"></script>
+-->
+{% endblock %}
