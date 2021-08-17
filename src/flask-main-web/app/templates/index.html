@@ -16,7 +16,7 @@
                         {% if row.onoff == 0 %}
                         <img src="/static/img/no-cctv-320.png" width="240px" height="200px" id="img_camera_{{ row.cameraid }}" />
                         {% else %}
-                        <img src="http://{{ baseurl }}/{{ row.dockername }}/ptz/video_feed" width="240px" height="200px" id="img_camera_{{ row.cameraid }}" />
+                        <img src="http://{{ baseurl }}:{{ row.dockerport }}/ptz/video_feed" width="240px" height="200px" id="img_camera_{{ row.cameraid }}" />
                         {% endif %}
                     </div>
                     {% if user_session.isadmin == 1 %}
@@ -35,7 +35,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="col">
-                                    <a class="btn btn-dark" style="width:100%;" href="http://{{ baseurl }}/{{ row.dockername }}/{{ sessionid }}"><i class="fas fa-eye"></i> コントロール</a>
+                                    <a class="btn btn-dark" style="width:100%;" href="http://{{ baseurl }}:{{ row.dockerport }}/{{ sessionid }}"><i class="fas fa-eye"></i> コントロール</a>
                                 </div>
                             </div>
                         </div>
