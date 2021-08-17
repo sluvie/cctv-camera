@@ -100,9 +100,11 @@ def video_stream():
 
             if frame != None:
                 global_frame = frame
+
                 yield (b'--frame\r\n'
-                        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+                        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n') # frame
             else:
+                #continue
                 yield (b'--frame\r\n'
                                 b'Content-Type: image/jpeg\r\n\r\n' + global_frame + b'\r\n\r\n')
 
@@ -299,8 +301,8 @@ def ptz_control():
     global ipaddress, port, username, title
 
     # auth page
-    if not g.user:
-            return redirect(url_for('error'))
+    #if not g.user:
+    #        return redirect(url_for('error'))
 
     # get base url
     setting_m = Setting_m()

@@ -35,10 +35,10 @@ class RecordingThread (threading.Thread):
 
     def run(self):
         while self.isRunning:
-            with lock:
-                ret, frame = self.cap.read()
-                if ret:
-                    self.out.write(frame)
+            #with lock:
+            ret, frame = self.cap.read()
+                #if ret:
+                #    self.out.write(frame)
 
         self.out.release()
 
@@ -77,7 +77,9 @@ class VideoCamera(object):
         ret, frame = self.cap.read()
 
         if ret:
-            ret, jpeg = cv2.imencode('.jpg', frame)
+            resized = cv2.resize(frame, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_AREA)
+            ret, jpeg = cv2.imencode('.jpg', resized)
+
             return ret, jpeg.tobytes()
         else:
             return None, None

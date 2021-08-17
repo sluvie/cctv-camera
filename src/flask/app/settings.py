@@ -6,7 +6,7 @@ UPLOADS_IMAGES_PATH = join(dirname(realpath(__file__)), 'uploads/images/')
 UPLOADS_VIDEOS_PATH = join(dirname(realpath(__file__)), 'uploads/videos/')
 
 DATABASE_CONFIG = {
-    "host": "192.168.1.101",
+    "host": "192.168.1.100",
     "port": 5499,
     "user": "camera",
     "password": "camera",
