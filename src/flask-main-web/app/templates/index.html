@@ -3,46 +3,54 @@
 {% block content %}
 <div class="container">
     <div id="camera_list">
-        <div class="row text-center">
+        <div class="row text-center mb-2">
             {% for row in cameras %}
-            {% if row.dockerstatus == 1 %}
-            <div class="col-4">
-                <div class="row p-1 m-2 bg-light">
+                {% if row.dockerstatus == 1 %}
+                <!-- item -->
+                <div class="col-lg-4 col-sm-6">
+                    <div class="camera-card mt-3 mb-30">
+                        <div class="camera-card-thumb">
+                            <!-- image -->
+                            {% if row.onoff == 0 %}
+                            <img src="/static/img/no-cctv-320.png" width="240px" height="200px" id="img_camera_{{ row.cameraid }}" />
+                            {% else %}
+                            <img src="http://{{ baseurl }}:{{ row.dockerport }}/ptz/video_feed" width="240px" height="200px" id="img_camera_{{ row.cameraid }}" />
+                            {% endif %}
 
-                    <div class="col-12 mt-2">
-                        <span>{{ row.positionorder }}. {{ row.companyname }} - {{ row.placename }}</span>
-                    </div>
-                    <div class="col-12 mt-2">
-                        {% if row.onoff == 0 %}
-                        <img src="/static/img/no-cctv-320.png" width="240px" height="200px" id="img_camera_{{ row.cameraid }}" />
-                        {% else %}
-                        <img src="http://{{ baseurl }}:{{ row.dockerport }}/ptz/video_feed" width="240px" height="200px" id="img_camera_{{ row.cameraid }}" />
-                        {% endif %}
-                    </div>
-                    {% if user_session.isadmin == 1 %}
-                    <div class="col-12 mt-2">
-                        <span>{{ row.ip }}</span>
-                    </div>
-                    {% endif %}
-                    <div class="col-12 mt-2">
-                        <div class="row">
-                            <div class="input-group input-group-lg">
-                                <div class="col">
-                                    {% if row.onoff == 0 %}
-                                    <button class="btn btn-success btn_onoff" style="width:100%;" data-cameraid="{{ row.cameraid }}" data-cameraonoff="{{ row.onoff }}">オン</button> <!-- ON -->
-                                    {% else %}
-                                    <button class="btn btn-danger btn_onoff" style="width:100%;" data-cameraid="{{ row.cameraid }}" data-cameraonoff="{{ row.onoff }}">オフ</button> <!-- OFF -->
-                                    {% endif %}
-                                </div>
-                                <div class="col">
-                                    <a class="btn btn-dark" style="width:100%;" href="http://{{ baseurl }}:{{ row.dockerport }}/{{ sessionid }}"><i class="fas fa-eye"></i> コントロール</a>
+                            <div class="camera-card-button mt-2 mb-2">
+                                <div class="row">
+                                    <div class="col">
+                                        <!-- on / off and redirect -->
+                                        {% if row.onoff == 0 %}
+                                        <button class="btn btn-success btn_onoff" style="width:100%;" data-cameraid="{{ row.cameraid }}" data-cameraonoff="{{ row.onoff }}">
+                                            <i class="fas fa-video"></i> オン <!-- ON -->
+                                        </button>
+                                        {% else %}
+                                        <button class="btn btn-danger btn_onoff" style="width:100%;" data-cameraid="{{ row.cameraid }}" data-cameraonoff="{{ row.onoff }}">
+                                            <i class="fas fa-video"></i> オフ <!-- OFF -->
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col">
+                                        <a class="btn btn-dark" style="width:100%;" href="http://{{ baseurl }}:{{ row.dockerport }}/{{ sessionid }}"><i class="fas fa-eye"></i> コントロール</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
+                        <div class="camera-card-details">
+                            <div class="row">
+                                <div class="col">{{ row.positionorder }}. {{ row.companyname }} - {{ row.placename }}</div>
+                                {% if user_session.isadmin == 1 %}
+                                <div class="col">
+                                    {{ row.ip }}
+                                </div>
+                                {% endif %}    
+                            </div>
+                        </div>
                     </div>
-                </div>                
-            </div>
-            {% endif %}
+                </div>
+                {% endif %}
             {% endfor %}
         </div>
     </div>

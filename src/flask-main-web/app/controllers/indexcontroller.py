@@ -1,3 +1,4 @@
+from datetime import timedelta
 from flask import (
         render_template, 
         g,
@@ -67,17 +68,6 @@ def index():
         user_session = g.user
         sessionid = session['sessionid']
 
-        # must login to all camera first
-        #for row in cameras:
-        #        if (row["dockerstatus"] == 1):
-        #                URL = "http://{}/{}/login/{}".format(baseurl, row["dockername"], sessionid)
-        #                print(URL)
-        #                try:
-        #                        r = requests.get(url = URL)
-        #                        print(r.json())
-        #                except:
-        #                        continue
-
         return render_template('index.html', title="Camera Management System", description="", cameras=cameras, baseurl=baseurl, user_session=user_session, sessionid=sessionid)
 
 
@@ -98,6 +88,10 @@ def login():
                         if result_session:
                                 sessionid = user_m.get_sessionid(username)
                         session['sessionid'] = sessionid
+                        
+                        session.permanent = True
+                        app.permanent_session_lifetime = timedelta(minutes=30) #  set the session expiration date 
+
                         return redirect(url_for('index'))
                 
                 return redirect(url_for('login'))
@@ -110,25 +104,6 @@ def logout():
         camera_m = Camera_m()
         cameras = camera_m.list()
         cameras = [] if cameras == None else cameras
-
-        # get base url
-        setting_m = Setting_m()
-        data_baseurl, message = setting_m.readone_keytag("SERVER", "BASEURL")
-        baseurl = "/"
-        if (data_baseurl):
-                baseurl = data_baseurl["tag1"]
-
-        sessionid = session['sessionid']
-
-        # must login to all camera first
-        for row in cameras:
-                URL = "http://{}/{}/logout/{}".format(baseurl, row["dockername"], sessionid)
-                try:
-                        r = requests.get(url = URL)
-                        print(r)
-                except:
-                        continue
-
         
         session.pop('user', None)
         session.pop('sessionid', None)

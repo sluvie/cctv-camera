@@ -2,3 +2,111 @@ html,
 body {
     font-size: 0.85em;
 }
+
+
+.camera-card .camera-card-thumb {
+    position: relative;
+    background-color: #fff;
+    overflow: hidden
+}
+
+.camera-card .camera-card-thumb .camera-card-link {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1
+}
+
+.camera-card .camera-card-thumb>img {
+    display: block;
+    width: auto;
+    margin: auto;
+    transition: opacity .35s;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden
+}
+
+.camera-card .camera-card-buttons {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    transition: opacity .35s;
+    text-align: right;
+    opacity: 0;
+    z-index: 2
+}
+
+.camera-card .camera-card-buttons .btn {
+    margin: 0;
+    margin-left: 7px;
+    padding: 0 12px
+}
+
+.camera-card .camera-card-buttons .btn-wishlist {
+    width: 36px;
+    padding: 0;
+    transition: color .3s;
+    background-color: #fff;
+    color: #606060;
+    text-decoration: none;
+    vertical-align: middle
+}
+
+.camera-card .camera-card-buttons .btn-wishlist>i {
+    font-size: 16px
+}
+
+.camera-card .camera-card-buttons .btn-wishlist:hover {
+    background-color: #fff;
+    color: #ef0568
+}
+
+.camera-card .camera-card-details {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    padding-top: 24px
+}
+
+.camera-card .camera-card-title {
+    margin-bottom: 0;
+    padding-right: 5px;
+    font-size: 16px;
+    font-weight: normal
+}
+
+.camera-card .camera-card-title>a {
+    color: #999;
+    text-decoration: none
+}
+
+.camera-card .camera-card-price {
+    margin-bottom: 0;
+    color: #606060;
+    font-size: 16px;
+    font-weight: normal
+}
+
+.camera-card .camera-card-price>del {
+    margin-right: 6px;
+    color: #999;
+    font-size: .9em
+}
+
+.camera-card:hover .camera-card-thumb>img {
+    opacity: .5
+}
+
+.camera-card:hover .camera-card-buttons {
+    opacity: 1
+}
+
+.touch .camera-card .camera-card-buttons {
+    opacity: 1
+}
