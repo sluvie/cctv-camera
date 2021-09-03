@@ -5,9 +5,6 @@ $(document).ready(function () {
     $("#btn_recordvideo").prop('disabled', false);  
 })
 
-
-
-
 /* navigation camera */
 
 $("#btn_left").click(function () {
@@ -286,10 +283,6 @@ function gotoposition(evt) {
 /* END SAVE LOAD POSITION */
 
 
-
-
-
-
 /* CAPTURE */
 // snapshot
 $("#btn_captureimage").click(function () {
@@ -320,17 +313,11 @@ $("#btn_recordvideo").click(function () {
     // var url = window.location.href + "record_status";
     $(this).prop('disabled', true);
     $("#btn_stopvideo").prop('disabled', false);
-    
-    // disable download link
-    //var downloadLink = document.getElementById("download");
-    //downloadLink.text = "";
-    //downloadLink.href = "";
 
     // XMLHttpRequest
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4 && xhr.status == 200) {
-            // alert(xhr.responseText);
         }
     }
     xhr.open("POST", "/ptz/record_status");
@@ -347,18 +334,24 @@ $("#btn_stopvideo").click(function () {
 
     // XMLHttpRequest
     var xhr = new XMLHttpRequest();
+
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4 && xhr.status == 200) {
-            // alert(xhr.responseText);
 
-            // enable download link
-            //var downloadLink = document.getElementById("download");
-            //downloadLink.text = "Download Video";
-            //downloadLink.href = "/static/video.avi";
+            //Convert the Byte Data to BLOB object.
+            var blob = xhr.response;
+            var url = window.URL || window.webkitURL;
+            var link = url.createObjectURL(blob);
+
+            var a = document.createElement("a"); //Create <a>
+            a.href = link; //"data:text/plain;charset=utf-8," + xhr.responseText;
+            a.download = "record.mp4"; //File name Here
+            a.click(); //Downloaded file
         }
     }
     xhr.open("POST", "/ptz/record_status");
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.responseType = 'blob';
     xhr.send(JSON.stringify({ status: "false" }));
 });
 

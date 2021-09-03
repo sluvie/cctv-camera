@@ -14,42 +14,6 @@ lock = threading.Lock()
 from app.settings import UPLOADS_IMAGES_PATH
 from app.settings import UPLOADS_VIDEOS_PATH
 
-class RecordingThread (threading.Thread):
-    def __init__(self, name, camera):
-        threading.Thread.__init__(self)
-        self.name = name
-        self.isRunning = True
-
-        filepath = UPLOADS_VIDEOS_PATH
-        filename_video = "video-" + time.strftime("%d-%m-%Y-%H-%M-%S") + ".avi"
-        
-        '''
-        self.cap = camera
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        self.out = cv2.VideoWriter(filepath + filename_video,fourcc, 20.0, (800,600))
-        '''
-        self.cap = camera
-        fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-        self.out = cv2.VideoWriter(filepath + filename_video,fourcc, 20.0, (640,480))
-
-
-    def run(self):
-        while self.isRunning:
-            #with lock:
-            ret, frame = self.cap.read()
-                #if ret:
-                #    self.out.write(frame)
-
-        self.out.release()
-
-    def stop(self):
-        self.isRunning = False
-
-    def __del__(self):
-        self.out.release()
-
-
-
 class VideoCamera(object):
 
     def __init__(self):
@@ -61,6 +25,7 @@ class VideoCamera(object):
         self.cameraid = config.get('CAMERA', 'cameraid')
 
         video_source = "rtsp://{}/1".format(self.ipaddress)
+        #video_source = 0
         self.cap = cv2.VideoCapture(video_source)
 
         # Initialize video recording environment
@@ -77,8 +42,13 @@ class VideoCamera(object):
         ret, frame = self.cap.read()
 
         if ret:
-            resized = cv2.resize(frame, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_AREA)
+            # show the frame camera
+            resized = cv2.resize(frame, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
             ret, jpeg = cv2.imencode('.jpg', resized)
+
+            # save / record
+            if self.is_record:
+                self.out.write(frame)
 
             return ret, jpeg.tobytes()
         else:
@@ -86,11 +56,18 @@ class VideoCamera(object):
 
     def start_record(self):
         self.is_record = True
-        self.recordingThread = RecordingThread("Video Recording Thread", self.cap)
-        self.recordingThread.start()
+
+        filepath = UPLOADS_VIDEOS_PATH
+        self.filename_video = "video-" + time.strftime("%d-%m-%Y-%H-%M-%S") + ".mp4"
+
+        frame_width  = int(self.cap.get(3))
+        frame_height = int(self.cap.get(4))
+        size = (frame_width, frame_height)
+
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        self.out = cv2.VideoWriter(filepath + self.filename_video,fourcc, 20.0, size)
 
     def stop_record(self):
         self.is_record = False
-
-        if self.recordingThread != None:
-            self.recordingThread.stop()
+        self.out.release()
+        return self.filename_video

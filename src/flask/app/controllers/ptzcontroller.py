@@ -26,6 +26,7 @@ from bs4 import BeautifulSoup
 
 # setting
 from app.settings import UPLOADS_IMAGES_PATH
+from app.settings import UPLOADS_VIDEOS_PATH
 from app.settings import DOWNLOADS_PATH
 
 # database
@@ -38,11 +39,11 @@ config = configparser.ConfigParser()
 config.readfp(open(r'app/config.ini'))
 
 dockername = config.get('CAMERA', 'dockerserver')
+
 # get from database
 camera_m = Camera_m()
 camera_data, message_result = camera_m.readone_docker(dockername)
-print(dockername)
-print(camera_data)
+
 title = ""
 ipaddress = ""
 port = ""
@@ -68,10 +69,8 @@ video_camera = VideoCamera()
 global_frame = None
 
 
-'''
-TODO:
-update the session database every 10 minutes
-'''
+
+# update session
 @app.before_request
 def before_request():
         g.user = None
@@ -80,6 +79,31 @@ def before_request():
             user = session['user']
             sessionid = session['sessionid']
             g.user = user
+
+
+# main web
+@app.route('/ptz/control', methods = ['GET'])
+def ptz_control():
+    global ipaddress, port, username, title
+
+    # auth page
+    #if not g.user:
+    #        return redirect(url_for('error'))
+
+    # get base url
+    setting_m = Setting_m()
+    data_baseurl, message = setting_m.readone_keytag("SERVER", "BASEURL")
+    baseurl = "/"
+    if (data_baseurl):
+            baseurl = data_baseurl["tag1"]
+
+    return render_template(
+        'ptz/control.html', 
+        title=title,
+        ip=ipaddress,
+        port=port,
+        baseurl=baseurl, 
+        description="")
 
 
 # CAMERA FUNCTION
@@ -91,87 +115,28 @@ def video_stream():
         video_camera = VideoCamera()
         
     while True:
-        with lock:
-            success, frame = video_camera.get_frame()
+        #with lock:
+        success, frame = video_camera.get_frame()
 
-            if not success:
-                video_camera = VideoCamera()
-                break
+        if not success:
+            video_camera = VideoCamera()
+            break
 
-            if frame != None:
-                global_frame = frame
+        if frame != None:
+            global_frame = frame
 
-                yield (b'--frame\r\n'
-                        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n') # frame
-            else:
-                #continue
-                yield (b'--frame\r\n'
-                                b'Content-Type: image/jpeg\r\n\r\n' + global_frame + b'\r\n\r\n')
+            yield (b'--frame\r\n'
+                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n') # frame
+        else:
+            #continue
+            yield (b'--frame\r\n'
+                            b'Content-Type: image/jpeg\r\n\r\n' + global_frame + b'\r\n\r\n')
 
-
-    '''
-    global outputFrame, lock, camera, dosnapshot, cameraid, camera
-    global filename_image, filename_video
-    global result_movie
-
-    while True:
-        # wait until the lock is required
-        with lock:
-            success, outputFrame = camera.read()  # read the camera frame
-        
-            if not success:
-                camera = cv2.VideoCapture(video_source)
-                break
-                
-            # check if the output frame is available, otherwise skip
-            # the iteration of the loop
-            if outputFrame is None:
-                continue
-
-            # do snapshot
-            if dosnapshot:
-                print("=========================================> SNAPSHOT")
-                # save to 
-                filepath = UPLOADS_IMAGES_PATH
-                # save full frame
-                cv2.imwrite(filepath + filename_image, cv2.cvtColor(outputFrame, cv2.COLOR_RGB2BGR))
-                # save thumb frame
-                dim = (200, 150)
-                resized = cv2.resize(outputFrame, dim) 
-                cv2.imwrite(filepath + "thumb/" + filename_image, cv2.cvtColor(resized, cv2.COLOR_RGB2BGR))
-                
-                result, message = snapshot_m.insert(filename_image, 1, cameraid, "suli")
-                dosnapshot = False
-                filename_image = ""
-
-
-            # do capture movie
-            if docapturemovie:
-                print(result_movie)
-                result_movie.write(outputFrame)
-                
-
-            # show to the screen
-            # encode the frame in JPEG format
-            #dim = (width, height)
-            #resized = cv2.resize(outputFrame, dim) 
-            (flag, encodedImage) = cv2.imencode('.jpg', outputFrame)
-
-            # ensure the frame was successfully encoded
-            if not flag:
-                continue
-
-        # yield the output frame in the byte format
-        yield(b'--frame\r\n'
-                b'Content-Type: image/jpeg\r\n\r\n' + bytearray(encodedImage) + b'\r\n')
-
-    '''
 
 # render the camera (stream)
 @app.route('/ptz/video_feed')
 def ptz_video_feed():
     return Response(video_stream(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
 # END OF CAMERA FUNCTION
 
 
@@ -295,29 +260,7 @@ def ptz_removepreset(number: str):
 
 
 
-# main web
-@app.route('/ptz/control', methods = ['GET'])
-def ptz_control():
-    global ipaddress, port, username, title
 
-    # auth page
-    #if not g.user:
-    #        return redirect(url_for('error'))
-
-    # get base url
-    setting_m = Setting_m()
-    data_baseurl, message = setting_m.readone_keytag("SERVER", "BASEURL")
-    baseurl = "/"
-    if (data_baseurl):
-            baseurl = data_baseurl["tag1"]
-
-    return render_template(
-        'ptz/control.html', 
-        title=title,
-        ip=ipaddress,
-        port=port,
-        baseurl=baseurl, 
-        description="")
 
 # save position
 @app.route('/ptz/saveposition', methods = ['POST'])
@@ -387,8 +330,12 @@ def record_status():
         video_camera.start_record()
         return jsonify(result="started")
     else:
-        video_camera.stop_record()
-        return jsonify(result="stopped")
+        filename = video_camera.stop_record()
+        uploads = UPLOADS_VIDEOS_PATH
+        print(uploads)
+        print(filename)
+        return send_from_directory(uploads, filename,  as_attachment=True)
+        #return jsonify(result="stopped")
 
 
 

@@ -14,6 +14,8 @@ from app.models.user import User_m
 @app.route('/<uuid:sessionid>', methods = ['GET'])
 def index(sessionid):
 
+        print(sessionid)
+
         # validate the sessionid
         user_m = User_m()
         user = user_m.get_fromsession(sessionid)
